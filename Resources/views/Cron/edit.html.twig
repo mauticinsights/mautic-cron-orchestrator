@@ -1,0 +1,77 @@
+{% extends '@MauticCore/Default/content.html.twig' %}
+
+{% block headerTitle %}
+    {% if is_new %}
+        {{ 'mautic.cron.orchestrator.add_job'|trans }}
+    {% else %}
+        {{ 'mautic.cron.orchestrator.edit_job'|trans({ '%name%': job.name }) }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="box-layout">
+    <div class="col-xs-12 bg-auto height-auto">
+        <div class="row">
+            <div class="col-xs-12 col-md-6 pa-md">
+                {{ form_start(form) }}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{{ 'mautic.cron.orchestrator.job_details'|trans }}</h3>
+                    </div>
+                    <div class="panel-body">
+                        {{ form_row(form.name) }}
+                        {{ form_row(form.command) }}
+                        {{ form_row(form.arguments) }}
+                        {{ form_row(form.frequencyMinutes) }}
+                        {{ form_row(form.isEnabled) }}
+                    </div>
+                </div>
+                {{ form_row(form.save) }}
+                {{ form_end(form) }}
+            </div>
+
+            <div class="col-xs-12 col-md-6 pa-md">
+                {% if not is_new and recent_logs is not empty %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">{{ 'mautic.cron.orchestrator.recent_logs'|trans }}</h3>
+                        </div>
+                        <div class="panel-body">
+                            {% for log in recent_logs %}
+                                <div class="panel panel-{% if log.status == 'success' %}success{% elseif log.status == 'error' %}danger{% else %}warning{% endif %} mb-sm">
+                                    <div class="panel-heading">
+                                        <strong>{{ log.status }}</strong>
+                                        &mdash;
+                                        {{ log.startedAt|date('Y-m-d H:i:s') }}
+                                        {% if log.durationSeconds is not null %}
+                                            ({{ log.durationSeconds|number_format(1) }}s)
+                                        {% endif %}
+                                        {% if log.exitCode is not null %}
+                                            &mdash; exit {{ log.exitCode }}
+                                        {% endif %}
+                                    </div>
+                                    {% if log.output %}
+                                        <div class="panel-body">
+                                            <pre class="pre-scrollable" style="max-height: 120px;">{{ log.output }}</pre>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% elseif not is_new %}
+                    <div class="alert alert-info">
+                        {{ 'mautic.cron.orchestrator.no_logs_yet'|trans }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="pa-md">
+            <a href="{{ path('mautic_cron_orchestrator_index') }}" class="btn btn-default">
+                {{ 'mautic.cron.orchestrator.back_to_list'|trans }}
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

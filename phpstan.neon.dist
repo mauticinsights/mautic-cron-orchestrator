@@ -1,0 +1,26 @@
+# PHPStan for standalone dev (mautic/core-lib is not installed).
+# Mautic framework classes: Tests/Stubs (autoload-dev) + phpstan/stubs for UI/base classes.
+# Config/services.php references MauticCoreExtension — covered by Tests/Stubs; still excluded to mirror observer.
+
+parameters:
+    level: 6
+    phpVersion: 80000
+    tmpDir: .phpstan-cache
+    treatPhpDocTypesAsCertain: false
+    paths:
+        - Command
+        - Controller
+        - DependencyInjection
+        - Entity
+        - EventListener
+        - Model
+        - Repository
+        - Security
+        - Tests
+        - MauticCronOrchestratorBundle.php
+    bootstrapFiles:
+        - phpstan/bootstrap-mautic-stubs.php
+    excludePaths:
+        analyse:
+            - Config/services.php
+            - Tests/Stubs

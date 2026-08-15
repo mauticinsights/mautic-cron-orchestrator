@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" fill="none" role="img" aria-label="Cron Orchestrator">
+  <rect width="160" height="160" rx="28" fill="#171717"/>
+  <!-- schedule bars (observer-style accent) -->
+  <path d="M42 72v36h14V72H42zm26-20v56h14V52H68zm26 12v44h14V64H94z" fill="#2563eb"/>
+  <circle cx="122" cy="48" r="10" fill="#f97316"/>
+  <text x="80" y="128" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="14" font-weight="700">Cron Orchestrator</text>
+</svg>

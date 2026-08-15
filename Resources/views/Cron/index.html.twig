@@ -1,0 +1,120 @@
+{% extends '@MauticCore/Default/content.html.twig' %}
+
+{% block headerTitle %}mautic.cron.orchestrator.title{% endblock %}
+
+{% block content %}
+<div class="box-layout">
+    <div class="col-xs-12 bg-auto height-auto">
+        <div class="row">
+            <div class="col-xs-12 pa-md">
+                <div class="pull-right">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            {{ 'mautic.cron.orchestrator.apply_preset'|trans }}
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            {% for key, preset_jobs in presets %}
+                                <li>
+                                    <a href="{{ path('mautic_cron_orchestrator_preset', { preset: key }) }}"
+                                       data-toggle="ajax"
+                                       data-method="POST">
+                                        {{ ('mautic.cron.orchestrator.preset.' ~ key)|trans }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <a href="{{ path('mautic_cron_orchestrator_edit', { objectId: 0 }) }}"
+                       class="btn btn-primary ml-sm"
+                       data-toggle="ajax">
+                        {{ 'mautic.cron.orchestrator.add_job'|trans }}
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive pa-md">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>{{ 'mautic.cron.orchestrator.th.name'|trans }}</th>
+                        <th>{{ 'mautic.cron.orchestrator.th.command'|trans }}</th>
+                        <th>{{ 'mautic.cron.orchestrator.th.frequency'|trans }}</th>
+                        <th>{{ 'mautic.cron.orchestrator.th.last_run'|trans }}</th>
+                        <th>{{ 'mautic.cron.orchestrator.th.status'|trans }}</th>
+                        <th>{{ 'mautic.cron.orchestrator.th.actions'|trans }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if jobs is empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">
+                                {{ 'mautic.cron.orchestrator.no_jobs'|trans }}
+                            </td>
+                        </tr>
+                    {% else %}
+                        {% for job in jobs %}
+                            <tr>
+                                <td>{{ job.name }}</td>
+                                <td><code>{{ job.command }}{% if job.arguments %} {{ job.arguments }}{% endif %}</code></td>
+                                <td>{{ 'mautic.cron.orchestrator.every_minutes'|trans({'%minutes%': job.frequencyMinutes}) }}</td>
+                                <td>{% if job.lastRunAt %}{{ job.lastRunAt|date('Y-m-d H:i') }}{% else %}{{ 'mautic.cron.orchestrator.never'|trans }}{% endif %}</td>
+                                <td>
+                                    {% set badge_class = 'label-primary' %}
+                                    {% if job.lastRunStatus == 'success' %}
+                                        {% set badge_class = 'label-success' %}
+                                    {% elseif job.lastRunStatus == 'error' %}
+                                        {% set badge_class = 'label-danger' %}
+                                    {% elseif job.lastRunStatus == 'running' %}
+                                        {% set badge_class = 'label-warning' %}
+                                    {% endif %}
+                                    {% if job.lastRunStatus %}
+                                        <span class="label {{ badge_class }}">{{ job.lastRunStatus }}</span>
+                                    {% else %}
+                                        <span class="label label-default">{{ 'mautic.cron.orchestrator.pending'|trans }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-xs">
+                                        <a href="{{ path('mautic_cron_orchestrator_edit', { objectId: job.id }) }}"
+                                           class="btn btn-default" data-toggle="ajax">
+                                            <i class="fa fa-pencil"></i>
+                                        </a>
+                                        <a href="{{ path('mautic_cron_orchestrator_toggle', { objectId: job.id }) }}"
+                                           class="btn btn-default" data-toggle="ajax" data-method="POST">
+                                            {% if job.isEnabled %}
+                                                <i class="fa fa-pause"></i>
+                                            {% else %}
+                                                <i class="fa fa-play"></i>
+                                            {% endif %}
+                                        </a>
+                                        <a href="{{ path('mautic_cron_orchestrator_run', { objectId: job.id }) }}"
+                                           class="btn btn-default" data-toggle="ajax" data-method="POST">
+                                            <i class="fa fa-play-circle"></i>
+                                        </a>
+                                        <a href="{{ path('mautic_cron_orchestrator_delete', { objectId: job.id }) }}"
+                                           class="btn btn-default" data-toggle="ajax" data-method="POST"
+                                           data-confirm="{{ 'mautic.cron.orchestrator.confirm_delete'|trans }}">
+                                            <i class="fa fa-trash-o"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% if not job.isEnabled %}
+                                <tr><td colspan="6" class="text-muted"><em>{{ 'mautic.cron.orchestrator.disabled_hint'|trans }}</em></td></tr>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pa-md">
+            <p class="text-muted small">
+                {{ 'mautic.cron.orchestrator.system_cron_hint'|trans }}
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
