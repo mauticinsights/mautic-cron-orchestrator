@@ -1,0 +1,70 @@
+{
+    "name": "mauticinsights/mautic-cron-orchestrator",
+    "description": "Mautic Cron Orchestrator — single cron entry point for Mautic",
+    "version": "5.0.0",
+    "type": "mautic-plugin",
+    "license": "MIT",
+    "keywords": [
+        "mautic",
+        "plugin",
+        "cron"
+    ],
+    "extra": {
+        "install-directory-name": "MauticCronOrchestratorBundle"
+    },
+    "require": {
+        "php": ">=8.0.2"
+    },
+    "suggest": {
+        "mautic/core-lib": "Mautic 5.x or 6.x core (required in production; not installed in this repo for standalone dev tooling)."
+    },
+    "require-dev": {
+        "dg/bypass-finals": "^1.9",
+        "doctrine/dbal": "^3.8",
+        "doctrine/orm": "^2.14",
+        "doctrine/persistence": "^3.0",
+        "friendsofphp/php-cs-fixer": "^3.59",
+        "phpstan/phpstan": "^1.12",
+        "phpunit/phpunit": "^9.6",
+        "psr/log": "^1.0|^2.0|^3.0",
+        "symfony/config": "^6.0,<6.1",
+        "symfony/console": "^6.0,<6.1",
+        "symfony/dependency-injection": "^6.0,<6.1",
+        "symfony/event-dispatcher-contracts": "^3.0",
+        "symfony/form": "^6.0,<6.1",
+        "symfony/framework-bundle": "^6.0,<6.1",
+        "symfony/http-foundation": "^6.0,<6.1",
+        "symfony/http-kernel": "^6.0,<6.1",
+        "symfony/process": "^6.0,<6.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "MauticPlugin\\MauticCronOrchestratorBundle\\": ""
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MauticPlugin\\MauticCronOrchestratorBundle\\Tests\\": "Tests/",
+            "Mautic\\": "Tests/Stubs/Mautic/"
+        }
+    },
+    "scripts": {
+        "cs-fixer": "php-cs-fixer fix",
+        "cs-check": "php-cs-fixer fix --dry-run --diff",
+        "test": "phpunit",
+        "phpstan": "phpstan analyse -c phpstan.neon.dist --no-progress --memory-limit=512M",
+        "ci": [
+            "@cs-check",
+            "@phpstan",
+            "@test"
+        ]
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "platform": {
+            "php": "8.0.30"
+        },
+        "sort-packages": true
+    }
+}
