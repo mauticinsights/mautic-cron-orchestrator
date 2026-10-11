@@ -8,12 +8,21 @@
 
 {% block content %}
     {% if isIndex %}
-    {# Core confirmation Cancel uses btn-primary without an icon, so default
-       padding-right (spacing-10) leaves unused space beside the label. #}
+    {# Core confirmation Cancel is btn-primary without an icon (extra gap/padding). #}
     <style>
-        .confirmation-modal .btn.btn-primary,
-        #CronJobLogModal .btn.btn-primary {
-            padding-right: var(--spacing-05);
+        .confirmation-modal .modal-body .btn {
+            width: fit-content;
+            justify-content: center;
+            gap: 0;
+        }
+        .confirmation-modal .modal-body .btn.btn-primary:not(:has(i)),
+        #CronJobLogModal .modal-body-content .btn.btn-primary:not(:has(i)) {
+            padding-inline: var(--spacing-05);
+        }
+        #CronJobLogModal .modal-body-content .btn {
+            width: fit-content;
+            justify-content: center;
+            gap: 0;
         }
     </style>
     <div id="page-list-wrapper" class="panel panel-default">
