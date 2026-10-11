@@ -6,15 +6,20 @@ namespace MauticPlugin\MauticCronOrchestratorBundle\Command;
 
 use MauticPlugin\MauticCronOrchestratorBundle\Integration\Config;
 use MauticPlugin\MauticCronOrchestratorBundle\Model\CronOrchestratorModel;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand(
+    name: self::COMMAND_NAME,
+    description: 'Run all due cron jobs managed by the Cron Orchestrator.',
+)]
 class CronRunCommand extends Command
 {
-    protected static $defaultName = 'mautic:cron:run';
+    public const COMMAND_NAME = 'mautic:cron:run';
 
     public function __construct(
         private CronOrchestratorModel $orchestrator,
@@ -25,8 +30,11 @@ class CronRunCommand extends Command
 
     protected function configure(): void
     {
+        if (null === $this->getName()) {
+            $this->setName(self::COMMAND_NAME);
+        }
+
         $this
-            ->setDescription('Run all due cron jobs managed by the Cron Orchestrator.')
             ->addOption('job', null, InputOption::VALUE_REQUIRED, 'Run a single job by ID immediately (used by UI Run now).')
             ->addOption('cleanup-only', null, InputOption::VALUE_NONE, 'Only purge old log entries, do not run any jobs.')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Show which jobs are due without executing them.');
