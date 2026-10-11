@@ -28,28 +28,36 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CronController extends FormController
 {
-    public function indexAction(Config $config): Response
+    public function indexAction(Request $request, Config $config): Response
     {
         if (!$this->security->isAdmin() || !$config->isPublished()) {
             return $this->accessDenied();
         }
 
+        $session = $request->getSession();
+        $search  = (string) $request->get('search', $session->get('mautic.cron_orchestrator.filter', ''));
+        $session->set('mautic.cron_orchestrator.filter', $search);
+
         $repo = $this->cronJobRepository();
-        $jobs = $repo->findBy([], ['id' => 'ASC']);
+        $jobs = $repo->search($search);
 
         return $this->delegateView([
             'viewParameters' => [
-                'jobs' => $jobs,
-                'presets' => [
-                    'minimal' => CronOrchestratorModel::getPresetJobs('minimal'),
+                'jobs'          => $jobs,
+                'searchValue'   => $search,
+                'tmpl'          => $request->get('tmpl', 'index'),
+                'activePreset'  => $repo->findActivePreset(),
+                'presets'       => [
+                    'minimal'  => CronOrchestratorModel::getPresetJobs('minimal'),
                     'standard' => CronOrchestratorModel::getPresetJobs('standard'),
-                    'full' => CronOrchestratorModel::getPresetJobs('full'),
+                    'full'     => CronOrchestratorModel::getPresetJobs('full'),
+                    'custom'   => CronOrchestratorModel::getPresetJobs('custom'),
                 ],
             ],
             'contentTemplate' => '@MauticCronOrchestratorBundle/Cron/index.html.twig',
             'passthroughVars' => [
                 'activeLink' => '#mautic_cron_orchestrator_index',
-                'route' => $this->generateUrl('mautic_cron_orchestrator_index'),
+                'route'      => $this->generateUrl('mautic_cron_orchestrator_index'),
             ],
         ]);
     }
@@ -182,7 +190,7 @@ class CronController extends FormController
             return $this->accessDenied();
         }
 
-        if (!\in_array($preset, ['minimal', 'standard', 'full'], true)) {
+        if (!\in_array($preset, ['minimal', 'standard', 'full', 'custom'], true)) {
             return $this->redirectToRoute('mautic_cron_orchestrator_index');
         }
 

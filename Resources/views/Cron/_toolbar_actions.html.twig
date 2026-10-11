@@ -1,0 +1,37 @@
+{# Preset switcher (shows active preset) + New — order matches Contacts toolbar (actions right of search). #}
+{% set activePreset = activePreset|default(null) %}
+{% set displayPreset = activePreset ?? 'custom' %}
+{% set presetLabelKey = 'mautic.cron.orchestrator.preset.' ~ displayPreset %}
+
+<span class="text-muted hidden-xs hidden-sm pe-xs" id="cron-preset-label">{{ 'mautic.cron.orchestrator.preset_label'|trans }}</span>
+<div class="btn-group">
+    <button type="button"
+            class="btn btn-ghost dropdown-toggle"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+            id="cron-preset-switcher">
+        <i class="ri-equalizer-line"></i>
+        <span class="hidden-xs hidden-sm">{{ presetLabelKey|trans }}</span>
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="cron-preset-switcher">
+        {% for key, _ in presets %}
+            <li{% if displayPreset == key %} class="active"{% endif %}>
+                <a href="{{ path('mautic_cron_orchestrator_preset', { preset: key }) }}"
+                   data-toggle="ajax"
+                   data-method="POST">
+                    {{ ('mautic.cron.orchestrator.preset.' ~ key)|trans }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<a href="{{ path('mautic_cron_orchestrator_edit', { objectId: 0 }) }}"
+   class="btn btn-primary"
+   id="new"
+   data-toggle="ajax">
+    <i class="ri-add-line"></i>
+    <span>{{ 'mautic.core.form.new'|trans }}</span>
+</a>

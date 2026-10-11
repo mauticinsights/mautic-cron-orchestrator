@@ -132,13 +132,21 @@ class CronOrchestratorModel
     }
 
     /**
-     * Seed preset jobs. Replaces all jobs from any built-in preset (keeps custom jobs).
+     * Seed preset jobs. Replaces all jobs from any built-in preset (keeps custom jobs),
+     * except the empty "custom" preset which clears every job.
      *
      * @return list<CronJob>
      */
     public function seedPreset(string $preset): array
     {
         $repo = $this->getCronJobRepository();
+
+        if ('custom' === $preset) {
+            $repo->deleteAll();
+
+            return [];
+        }
+
         $repo->deleteManagedPresets();
 
         $jobs = self::getPresetJobs($preset);
@@ -239,6 +247,7 @@ class CronOrchestratorModel
         return match ($preset) {
             'minimal' => $minimal,
             'full' => $full,
+            'custom' => [],
             default => $standard,
         };
     }

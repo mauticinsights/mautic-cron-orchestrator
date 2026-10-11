@@ -46,6 +46,37 @@ class CronJobRepository extends EntityRepository
         return $this->findBy(['preset' => $preset]);
     }
 
+    /**
+     * Active built-in preset currently seeded into the job table, if any.
+     */
+    public function findActivePreset(): ?string
+    {
+        $job = $this->createQueryBuilder('j')
+            ->where('j.preset IN (:presets)')
+            ->setParameter('presets', ['minimal', 'standard', 'full'])
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $job instanceof CronJob ? $job->getPreset() : null;
+    }
+
+    /**
+     * @return CronJob[]
+     */
+    public function search(string $search = ''): array
+    {
+        $qb = $this->createQueryBuilder('j')->orderBy('j.id', 'ASC');
+
+        $search = trim($search);
+        if ('' !== $search) {
+            $qb->andWhere('j.name LIKE :q OR j.command LIKE :q')
+                ->setParameter('q', '%'.$search.'%');
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
     public function deleteByPreset(string $preset): void
     {
         $this->createQueryBuilder('j')
@@ -66,6 +97,17 @@ class CronJobRepository extends EntityRepository
             ->delete()
             ->where('j.preset IN (:presets)')
             ->setParameter('presets', ['minimal', 'standard', 'full'])
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * Remove every cron job (used by the empty Custom preset).
+     */
+    public function deleteAll(): void
+    {
+        $this->createQueryBuilder('j')
+            ->delete()
             ->getQuery()
             ->execute();
     }
