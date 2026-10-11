@@ -2,6 +2,8 @@
 
 A plugin for Mautic 5.x that replaces dozens of system cron entries with a **single** orchestrator command. Jobs (segments, campaigns, broadcasts, webhooks, …) are configured in the Mautic UI and run on a schedule stored in the database.
 
+![Cron Orchestrator job list](docs/images/cron-orchestrator-list.png)
+
 ## What This Plugin Does
 
 - runs due maintenance jobs via `mautic:cron:run` (one system cron every minute)
