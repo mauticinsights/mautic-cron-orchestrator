@@ -1,7 +1,7 @@
 {
     "name": "mauticinsights/mautic-cron-orchestrator",
     "description": "Mautic Cron Orchestrator — single cron entry point for Mautic",
-    "version": "5.0.0",
+    "version": "5.0.2",
     "type": "mautic-plugin",
     "license": "MIT",
     "keywords": [

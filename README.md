@@ -39,7 +39,7 @@ Package: [packagist.org/packages/mauticinsights/mautic-cron-orchestrator](https:
 
    `plugins/MauticCronOrchestratorBundle/composer.json`
 
-   Rename the extracted folder to `MauticCronOrchestratorBundle` if GitHub named it something like `mautic-cron-orchestrator-5.0.0`.
+   Rename the extracted folder to `MauticCronOrchestratorBundle` if GitHub named it something like `mautic-cron-orchestrator-5.0.2`.
 3. Click **Install/Upgrade Plugins** in **Settings → Plugins** instead.
 
 ### Alternative: install from GitHub (VCS)
