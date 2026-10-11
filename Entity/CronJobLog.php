@@ -15,7 +15,7 @@ class CronJobLog
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(type: 'integer')]
-    private int $id = 0;
+    private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: CronJob::class)]
     #[ORM\JoinColumn(name: 'cron_job_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
@@ -44,7 +44,7 @@ class CronJobLog
         $this->startedAt = new DateTimeImmutable();
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

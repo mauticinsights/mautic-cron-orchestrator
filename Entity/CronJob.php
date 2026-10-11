@@ -15,7 +15,7 @@ class CronJob
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(type: 'integer')]
-    private int $id = 0;
+    private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 100)]
     private string $name;
@@ -55,7 +55,7 @@ class CronJob
         $this->createdAt = new DateTimeImmutable();
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
