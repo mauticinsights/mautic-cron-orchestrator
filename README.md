@@ -22,6 +22,7 @@ A plugin for Mautic that replaces dozens of system cron entries with a **single*
 |--------|-----|---------|
 | Mautic 5 | PHP 8.0+ | `mauticinsights/mautic-cron-orchestrator:^5` |
 | Mautic 6 | PHP 8.1+ | `mauticinsights/mautic-cron-orchestrator:^6` |
+| Mautic 7 | PHP 8.2+ | `mauticinsights/mautic-cron-orchestrator:^7` |
 
 - Composer 2.x
 
@@ -30,6 +31,12 @@ A plugin for Mautic that replaces dozens of system cron entries with a **single*
 ### Recommended (Packagist)
 
 From the root of your Mautic project. Use a constraint that matches your Mautic major version.
+
+#### Mautic 7
+
+```bash
+composer require mauticinsights/mautic-cron-orchestrator:^7
+```
 
 #### Mautic 6
 
@@ -47,7 +54,7 @@ Package: [packagist.org/packages/mauticinsights/mautic-cron-orchestrator](https:
 
 ### Alternative: install from ZIP (no Composer)
 
-1. Download **Source code (zip)** for the release that matches your Mautic major version (plugin `5.x` → Mautic 5.x, plugin `6.x` → Mautic 6.x, …): [github.com/mauticinsights/mautic-cron-orchestrator/releases](https://github.com/mauticinsights/mautic-cron-orchestrator/releases).
+1. Download **Source code (zip)** for the release that matches your Mautic major version (plugin `5.x` → Mautic 5.x, `6.x` → Mautic 6.x, `7.x` → Mautic 7.x, …): [github.com/mauticinsights/mautic-cron-orchestrator/releases](https://github.com/mauticinsights/mautic-cron-orchestrator/releases).
 2. Extract the ZIP into your Mautic plugins directory as **`plugins/MauticCronOrchestratorBundle`** (on Composer-based installs often `docroot/plugins/MauticCronOrchestratorBundle`).
 
    The plugin root must contain `composer.json` at:
@@ -71,6 +78,9 @@ Only needed if you want a branch / unreleased commit. Add to the `repositories` 
 Then:
 
 ```bash
+# Mautic 7
+composer require mauticinsights/mautic-cron-orchestrator:dev-7.x -W
+
 # Mautic 6
 composer require mauticinsights/mautic-cron-orchestrator:dev-6.x -W
 
