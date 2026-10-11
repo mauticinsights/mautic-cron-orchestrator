@@ -69,11 +69,13 @@
                                    class="btn btn-default" data-toggle="ajax" data-method="POST">
                                     <i class="fa fa-play-circle"></i>
                                 </a>
-                                <a href="{{ path('mautic_cron_orchestrator_delete', { objectId: job.id }) }}"
-                                   class="btn btn-default" data-toggle="ajax" data-method="POST"
-                                   data-confirm="{{ 'mautic.cron.orchestrator.confirm_delete'|trans }}">
-                                    <i class="fa fa-trash-o"></i>
-                                </a>
+                                {{- include('@MauticCore/Helper/confirm.html.twig', {
+                                    'btnClass': 'btn btn-default',
+                                    'message': 'mautic.cron.orchestrator.confirm_delete'|trans({'%name%': job.name}),
+                                    'confirmText': 'mautic.core.form.delete'|trans,
+                                    'confirmAction': path('mautic_cron_orchestrator_delete', { objectId: job.id }),
+                                    'iconClass': 'fa fa-trash-o',
+                                }) -}}
                             </div>
                         </td>
                     </tr>

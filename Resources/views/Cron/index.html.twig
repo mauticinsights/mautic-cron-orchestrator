@@ -8,6 +8,13 @@
 
 {% block content %}
     {% if isIndex %}
+    {# Core confirmation Cancel uses btn-primary without an icon, so default
+       padding-right (spacing-10) leaves unused space beside the label. #}
+    <style>
+        .confirmation-modal .btn.btn-primary {
+            padding-right: var(--spacing-05);
+        }
+    </style>
     <div id="page-list-wrapper" class="panel panel-default">
         {{- include('@MauticCore/Helper/list_toolbar.html.twig', {
             'searchValue': searchValue|default(''),
