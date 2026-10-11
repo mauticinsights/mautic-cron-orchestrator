@@ -1,6 +1,8 @@
 # Mautic Cron Orchestrator
 
-A plugin for Mautic 5.x that replaces dozens of system cron entries with a **single** orchestrator command. Jobs (segments, campaigns, broadcasts, webhooks, …) are configured in the Mautic UI and run on a schedule stored in the database.
+A plugin for Mautic that replaces dozens of system cron entries with a **single** orchestrator command. Jobs (segments, campaigns, broadcasts, webhooks, …) are configured in the Mautic UI and run on a schedule stored in the database.
+
+**This branch (`6.x`) targets Mautic 6.** Use branch `5.x` / package `^5.0` for Mautic 5.
 
 ![Cron Orchestrator job list](docs/images/cron-orchestrator-list.png)
 
@@ -16,18 +18,29 @@ A plugin for Mautic 5.x that replaces dozens of system cron entries with a **sin
 
 ## Requirements
 
-- PHP 8.0+
-- Mautic 5.x
+| Mautic | PHP | Package |
+|--------|-----|---------|
+| Mautic 5 | PHP 8.0+ | `mauticinsights/mautic-cron-orchestrator:^5.0` |
+| Mautic 6 | PHP 8.1+ | `mauticinsights/mautic-cron-orchestrator:^6.0` |
+
 - Composer 2.x
 
 ## Installation
 
 ### Recommended (Packagist)
 
-From the root of your Mautic project. Use a constraint that matches your Mautic major version (plugin `^5` → Mautic 5.x, plugin `^6` → Mautic 6.x, …):
+From the root of your Mautic project. Use a constraint that matches your Mautic major version.
+
+#### Mautic 6
 
 ```bash
-composer require mauticinsights/mautic-cron-orchestrator:^5
+composer require mauticinsights/mautic-cron-orchestrator:^6.0
+```
+
+#### Mautic 5
+
+```bash
+composer require mauticinsights/mautic-cron-orchestrator:^5.0
 ```
 
 Package: [packagist.org/packages/mauticinsights/mautic-cron-orchestrator](https://packagist.org/packages/mauticinsights/mautic-cron-orchestrator)
@@ -56,7 +69,11 @@ Only needed if you want a branch / unreleased commit. Add to the `repositories` 
 Then:
 
 ```bash
-composer require mauticinsights/mautic-cron-orchestrator:dev-main -W
+# Mautic 6
+composer require mauticinsights/mautic-cron-orchestrator:dev-6.x -W
+
+# Mautic 5
+composer require mauticinsights/mautic-cron-orchestrator:dev-5.x -W
 ```
 
 ### After install

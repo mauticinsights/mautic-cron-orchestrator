@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  * Mautic admin UI for managing cron jobs.
  *
  * Unit tests not feasible in standalone mode — depends on Mautic FormController
- * ($this->security, $this->getDoctrine(), $this->delegateView(), $this->createFormBuilder()).
+ * ($this->security, $this->doctrine, $this->delegateView(), $this->createFormBuilder()).
  * Tested via manual verification in a running Mautic instance.
  */
 class CronController extends FormController
@@ -329,7 +329,7 @@ class CronController extends FormController
 
     private function cronJobRepository(): CronJobRepository
     {
-        $repo = $this->getDoctrine()->getRepository(CronJob::class);
+        $repo = $this->doctrine->getRepository(CronJob::class);
         \assert($repo instanceof CronJobRepository);
 
         return $repo;
@@ -337,7 +337,7 @@ class CronController extends FormController
 
     private function cronJobLogRepository(): CronJobLogRepository
     {
-        $repo = $this->getDoctrine()->getRepository(CronJobLog::class);
+        $repo = $this->doctrine->getRepository(CronJobLog::class);
         \assert($repo instanceof CronJobLogRepository);
 
         return $repo;

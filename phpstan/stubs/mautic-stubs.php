@@ -35,6 +35,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class FormController extends AbstractController
 {
+    protected ManagerRegistry $doctrine;
+
     protected CorePermissions $security;
 
     protected function accessDenied(): Response
@@ -57,11 +59,6 @@ class FormController extends AbstractController
         string $domain = 'flashes',
         bool $addNotification = false,
     ): void {
-    }
-
-    protected function getDoctrine(): ManagerRegistry
-    {
-        throw new \RuntimeException('Stub');
     }
 
     /**

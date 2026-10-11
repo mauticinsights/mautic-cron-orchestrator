@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
     'name' => 'Mautic Cron Orchestrator',
     'description' => 'Single cron entry point that manages Mautic maintenance jobs: segment rebuild, campaign trigger, broadcast send, webhook processing, and more.',
-    'version' => '5.0.2',
+    'version' => '6.0.0',
     'author' => 'Mautic Insights',
     'routes' => [
         'main' => [
