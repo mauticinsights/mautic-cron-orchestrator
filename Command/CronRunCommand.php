@@ -27,6 +27,7 @@ class CronRunCommand extends Command
     {
         $this
             ->setDescription('Run all due cron jobs managed by the Cron Orchestrator.')
+            ->addOption('job', null, InputOption::VALUE_REQUIRED, 'Run a single job by ID immediately (used by UI Run now).')
             ->addOption('cleanup-only', null, InputOption::VALUE_NONE, 'Only purge old log entries, do not run any jobs.')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Show which jobs are due without executing them.');
     }
@@ -37,6 +38,26 @@ class CronRunCommand extends Command
 
         if (!$this->config->isPublished()) {
             $io->note('Cron Orchestrator is disabled in Plugins settings. Enable it to run jobs.');
+
+            return Command::SUCCESS;
+        }
+
+        $jobId = $input->getOption('job');
+        if (null !== $jobId && '' !== $jobId) {
+            $result = $this->orchestrator->runJobById((int) $jobId);
+            if (null === $result) {
+                $io->error(sprintf('Cron job #%s was not found.', $jobId));
+
+                return Command::FAILURE;
+            }
+
+            if (\in_array($result['status'], ['error', 'timeout'], true)) {
+                $io->error(sprintf('Job #%s finished with status: %s', $jobId, $result['status']));
+
+                return Command::FAILURE;
+            }
+
+            $io->success(sprintf('Job #%s finished with status: %s', $jobId, $result['status']));
 
             return Command::SUCCESS;
         }

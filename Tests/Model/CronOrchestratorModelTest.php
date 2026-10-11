@@ -452,6 +452,59 @@ final class CronOrchestratorModelTest extends TestCase
         $this->assertSame(1, $stats['run']);
     }
 
+    public function testBuildBackgroundRunCommandDetachesOnUnix(): void
+    {
+        if ('\\' === \DIRECTORY_SEPARATOR) {
+            $this->markTestSkipped('Unix background command shape');
+        }
+
+        $command = $this->createModel()->buildBackgroundRunCommand(42);
+
+        $this->assertStringContainsString('mautic:cron:run --job=42', $command);
+        $this->assertStringContainsString('/bin/console', $command);
+        $this->assertStringEndsWith('&', trim($command));
+    }
+
+    public function testDispatchJobNowReturnsFalseWhenJobHasNoId(): void
+    {
+        $job = new CronJob();
+        $job->setName('x');
+        $job->setCommand('mautic:segments:update');
+        $job->setFrequencyMinutes(15);
+
+        $this->assertFalse($this->createModel()->dispatchJobNow($job));
+    }
+
+    public function testDispatchJobNowReturnsFalseWhenAlreadyRunning(): void
+    {
+        $job = new CronJob();
+        $job->setName('x');
+        $job->setCommand('mautic:segments:update');
+        $job->setFrequencyMinutes(15);
+        $job->setLastRunStatus('running');
+
+        $reflection = new \ReflectionClass($job);
+        $id = $reflection->getProperty('id');
+        $id->setAccessible(true);
+        $id->setValue($job, 7);
+
+        $this->assertFalse($this->createModel()->dispatchJobNow($job));
+    }
+
+    public function testRunJobByIdReturnsNullWhenMissing(): void
+    {
+        $repo = $this->createMock(CronJobRepository::class);
+        $repo->expects($this->once())->method('find')->with(99)->willReturn(null);
+
+        $em = $this->createMock(EntityManagerInterface::class);
+        $em->method('getRepository')->willReturnMap([
+            [CronJob::class, $repo],
+            [CronJobLog::class, $this->createMock(CronJobLogRepository::class)],
+        ]);
+
+        $this->assertNull((new CronOrchestratorModel($em, new NullLogger(), '/tmp', 60, 30))->runJobById(99));
+    }
+
     private function createModel(): CronOrchestratorModel
     {
         return new CronOrchestratorModel(

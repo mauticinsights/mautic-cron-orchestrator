@@ -225,7 +225,11 @@ class CronController extends FormController
         $job = $repo->find((int) $objectId);
 
         if (null !== $job) {
-            $orchestrator->runJobNow($job);
+            if ($orchestrator->dispatchJobNow($job)) {
+                $this->addFlashMessage('mautic.cron.orchestrator.notice.job_started', ['%name%' => $job->getName()]);
+            } else {
+                $this->addFlashMessage('mautic.cron.orchestrator.notice.job_already_running', ['%name%' => $job->getName()]);
+            }
         }
 
         return $this->redirectToRoute('mautic_cron_orchestrator_index');

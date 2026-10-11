@@ -103,7 +103,7 @@ class CronOrchestratorModel
     }
 
     /**
-     * Run a single job immediately (manual trigger).
+     * Run a single job immediately (manual trigger). Blocks until the job finishes.
      *
      * @return array{status: string, output: string}
      */
@@ -129,6 +129,71 @@ class CronOrchestratorModel
         $repo->save($job);
 
         return ['status' => $status, 'output' => (string) $log->getOutput()];
+    }
+
+    /**
+     * Run a single job by ID (used by CLI --job).
+     *
+     * @return array{status: string, output: string}|null Null when the job does not exist
+     */
+    public function runJobById(int $jobId): ?array
+    {
+        $job = $this->getCronJobRepository()->find($jobId);
+        if (null === $job) {
+            return null;
+        }
+
+        return $this->runJobNow($job);
+    }
+
+    /**
+     * Start a job in a detached background process and return immediately.
+     * Used by the UI "Run now" action so the HTTP request does not wait for the command.
+     */
+    public function dispatchJobNow(CronJob $job): bool
+    {
+        $jobId = $job->getId();
+        if (null === $jobId) {
+            return false;
+        }
+
+        if ('running' === $job->getLastRunStatus()) {
+            return false;
+        }
+
+        $process = Process::fromShellCommandline(
+            $this->buildBackgroundRunCommand($jobId),
+            $this->projectDir,
+        );
+        $process->setTimeout(15);
+        $process->run();
+
+        return true;
+    }
+
+    /**
+     * Shell command that forks mautic:cron:run --job=ID and returns immediately.
+     */
+    public function buildBackgroundRunCommand(int $jobId): string
+    {
+        $php     = PHP_BINARY ?: 'php';
+        $console = $this->projectDir.\DIRECTORY_SEPARATOR.'bin'.\DIRECTORY_SEPARATOR.'console';
+
+        if ('\\' === \DIRECTORY_SEPARATOR) {
+            return sprintf(
+                'start /B "" %s %s mautic:cron:run --job=%d',
+                escapeshellarg($php),
+                escapeshellarg($console),
+                $jobId,
+            );
+        }
+
+        return sprintf(
+            '%s %s mautic:cron:run --job=%d > /dev/null 2>&1 &',
+            escapeshellarg($php),
+            escapeshellarg($console),
+            $jobId,
+        );
     }
 
     /**
