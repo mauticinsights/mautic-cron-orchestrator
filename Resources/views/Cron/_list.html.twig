@@ -24,42 +24,57 @@
                 </tr>
             {% else %}
                 {% for job in jobs %}
+                    {% set rowCustomButtons = [
+                        {
+                            attr: {
+                                href: path('mautic_cron_orchestrator_edit', { objectId: job.id }),
+                                'data-toggle': 'ajax',
+                            },
+                            btnText: 'mautic.core.form.edit',
+                            iconClass: 'ri-edit-line',
+                            priority: 100,
+                        },
+                        {
+                            attr: {
+                                href: path('mautic_cron_orchestrator_run', { objectId: job.id }),
+                                'data-toggle': 'ajax',
+                                'data-method': 'POST',
+                            },
+                            btnText: 'mautic.cron.orchestrator.run_now',
+                            iconClass: 'ri-play-circle-line',
+                            priority: 50,
+                        },
+                    ] %}
+                    {% if job.lastRunStatus %}
+                        {% set rowCustomButtons = rowCustomButtons|merge([{
+                            attr: {
+                                href: path('mautic_cron_orchestrator_last_log', { objectId: job.id }),
+                                'data-toggle': 'ajaxmodal',
+                                'data-target': '#CronJobLogModal',
+                                'data-footer': 'false',
+                                'data-header': 'mautic.cron.orchestrator.last_log'|trans({'%name%': job.name})|e('html_attr'),
+                            },
+                            btnText: 'mautic.cron.orchestrator.show_log',
+                            iconClass: 'ri-information-line',
+                            priority: 40,
+                        }]) %}
+                    {% endif %}
+                    {% set rowCustomButtons = rowCustomButtons|merge([{
+                        confirm: {
+                            message: 'mautic.cron.orchestrator.confirm_delete'|trans({'%name%': job.name}),
+                            confirmText: 'mautic.core.form.delete'|trans,
+                            confirmAction: path('mautic_cron_orchestrator_delete', { objectId: job.id }),
+                            iconClass: 'ri-delete-bin-line',
+                            template: 'delete',
+                        },
+                        priority: -1,
+                    }]) %}
                     <tr class="{% if not job.isEnabled %}text-muted{% endif %}">
                         <td>
                             {{ include('@MauticCore/Helper/list_actions.html.twig', {
                                 item: { id: job.id, name: job.name },
                                 templateButtons: {},
-                                customButtons: [
-                                    {
-                                        attr: {
-                                            href: path('mautic_cron_orchestrator_edit', { objectId: job.id }),
-                                            'data-toggle': 'ajax',
-                                        },
-                                        btnText: 'mautic.core.form.edit',
-                                        iconClass: 'ri-edit-line',
-                                        priority: 100,
-                                    },
-                                    {
-                                        attr: {
-                                            href: path('mautic_cron_orchestrator_run', { objectId: job.id }),
-                                            'data-toggle': 'ajax',
-                                            'data-method': 'POST',
-                                        },
-                                        btnText: 'mautic.cron.orchestrator.run_now',
-                                        iconClass: 'ri-play-circle-line',
-                                        priority: 50,
-                                    },
-                                    {
-                                        confirm: {
-                                            message: 'mautic.cron.orchestrator.confirm_delete'|trans({'%name%': job.name}),
-                                            confirmText: 'mautic.core.form.delete'|trans,
-                                            confirmAction: path('mautic_cron_orchestrator_delete', { objectId: job.id }),
-                                            iconClass: 'ri-delete-bin-line',
-                                            template: 'delete',
-                                        },
-                                        priority: -1,
-                                    },
-                                ],
+                                customButtons: rowCustomButtons,
                             }) }}
                         </td>
                         <td>
