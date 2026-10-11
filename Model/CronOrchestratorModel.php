@@ -176,7 +176,7 @@ class CronOrchestratorModel
      */
     public function buildBackgroundRunCommand(int $jobId): string
     {
-        $php     = PHP_BINARY ?: 'php';
+        $php = PHP_BINARY;
         $console = $this->projectDir.\DIRECTORY_SEPARATOR.'bin'.\DIRECTORY_SEPARATOR.'console';
 
         if ('\\' === \DIRECTORY_SEPARATOR) {

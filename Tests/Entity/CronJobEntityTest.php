@@ -25,7 +25,7 @@ final class CronJobEntityTest extends TestCase
         $modified = new DateTimeImmutable('2026-08-15 13:00:00');
         $job->setModifiedAt($modified);
 
-        $this->assertSame(0, $job->getId());
+        $this->assertNull($job->getId());
         $this->assertSame('Segments', $job->getName());
         $this->assertSame('mautic:segments:update', $job->getCommand());
         $this->assertSame('--no-ansi', $job->getArguments());
@@ -50,5 +50,33 @@ final class CronJobEntityTest extends TestCase
         $this->assertNull($job->getLastRunStatus());
         $this->assertNull($job->getLastDurationSeconds());
         $this->assertNull($job->getModifiedAt());
+    }
+
+    public function testPresetColumnDistinguishesCustomFromManagedPresets(): void
+    {
+        $custom = new CronJob();
+        $this->assertSame('custom', $custom->getPreset());
+
+        foreach (['minimal', 'standard', 'full'] as $preset) {
+            $job = new CronJob();
+            $job->setPreset($preset);
+            $this->assertSame($preset, $job->getPreset());
+            $this->assertNotSame('custom', $job->getPreset());
+        }
+    }
+
+    public function testPendingStatusMeansNoLastRunStatusYet(): void
+    {
+        $job = new CronJob();
+        $this->assertNull($job->getLastRunStatus(), 'UI shows Pending when lastRunStatus is empty');
+
+        $job->setLastRunStatus('success');
+        $this->assertSame('success', $job->getLastRunStatus());
+    }
+
+    public function testNullableIdDefaultsToNull(): void
+    {
+        $job = new CronJob();
+        $this->assertNull($job->getId());
     }
 }

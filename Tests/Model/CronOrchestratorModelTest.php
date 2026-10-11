@@ -15,6 +15,7 @@ use MauticPlugin\MauticCronOrchestratorBundle\Repository\CronJobRepository;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use ReflectionClass;
 
 final class CronOrchestratorModelTest extends TestCase
 {
@@ -483,7 +484,7 @@ final class CronOrchestratorModelTest extends TestCase
         $job->setFrequencyMinutes(15);
         $job->setLastRunStatus('running');
 
-        $reflection = new \ReflectionClass($job);
+        $reflection = new ReflectionClass($job);
         $id = $reflection->getProperty('id');
         $id->setAccessible(true);
         $id->setValue($job, 7);
@@ -503,6 +504,49 @@ final class CronOrchestratorModelTest extends TestCase
         ]);
 
         $this->assertNull((new CronOrchestratorModel($em, new NullLogger(), '/tmp', 60, 30))->runJobById(99));
+    }
+
+    public function testRunJobByIdDelegatesToRunJobNow(): void
+    {
+        $projectDir = $this->createFakeConsoleProject(0);
+        $job = new CronJob();
+        $job->setName('test');
+        $job->setCommand('mautic:segments:update');
+        $job->setFrequencyMinutes(15);
+
+        $repo = $this->createMock(CronJobRepository::class);
+        $repo->expects($this->once())->method('find')->with(3)->willReturn($job);
+        $repo->expects($this->atLeastOnce())->method('save');
+
+        $logRepo = $this->createMock(CronJobLogRepository::class);
+        $logRepo->expects($this->once())->method('save');
+
+        $em = $this->createMock(EntityManagerInterface::class);
+        $em->method('getRepository')->willReturnMap([
+            [CronJob::class, $repo],
+            [CronJobLog::class, $logRepo],
+        ]);
+
+        $result = (new CronOrchestratorModel($em, new NullLogger(), $projectDir, 60, 30))->runJobById(3);
+        $this->assertIsArray($result);
+        $this->assertSame('success', $result['status']);
+    }
+
+    public function testSeedPresetAlwaysDeletesManagedPresetsFirst(): void
+    {
+        $em = $this->createMock(EntityManagerInterface::class);
+        $repo = $this->createMock(CronJobRepository::class);
+        $repo->expects($this->once())->method('deleteManagedPresets');
+        $em->method('getRepository')->willReturnMap([
+            [CronJob::class, $repo],
+            [CronJobLog::class, $this->createMock(CronJobLogRepository::class)],
+        ]);
+        $em->expects($this->exactly(10))->method('persist');
+        $em->expects($this->once())->method('flush');
+
+        $created = (new CronOrchestratorModel($em, new NullLogger(), '/tmp', 60, 30))->seedPreset('standard');
+        $this->assertCount(10, $created);
+        $this->assertSame('standard', $created[0]->getPreset());
     }
 
     private function createModel(): CronOrchestratorModel

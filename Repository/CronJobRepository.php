@@ -124,7 +124,7 @@ class CronJobRepository extends EntityRepository
         }
 
         $jobs = $this->findBy(['id' => $ids]);
-        $em   = $this->getEntityManager();
+        $em = $this->getEntityManager();
         foreach ($jobs as $job) {
             $em->remove($job);
         }

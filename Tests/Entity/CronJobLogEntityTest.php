@@ -29,7 +29,7 @@ final class CronJobLogEntityTest extends TestCase
         $log->setExitCode(0);
         $log->setOutput('ok');
 
-        $this->assertSame(0, $log->getId());
+        $this->assertNull($log->getId());
         $this->assertSame($job, $log->getCronJob());
         $this->assertSame($started, $log->getStartedAt());
         $this->assertSame($finished, $log->getFinishedAt());

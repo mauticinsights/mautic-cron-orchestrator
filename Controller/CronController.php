@@ -37,7 +37,7 @@ class CronController extends FormController
         }
 
         $session = $request->getSession();
-        $search  = (string) $request->get('search', $session->get('mautic.cron_orchestrator.filter', ''));
+        $search = (string) $request->get('search', $session->get('mautic.cron_orchestrator.filter', ''));
         $session->set('mautic.cron_orchestrator.filter', $search);
 
         $repo = $this->cronJobRepository();
@@ -45,21 +45,21 @@ class CronController extends FormController
 
         return $this->delegateView([
             'viewParameters' => [
-                'jobs'          => $jobs,
-                'searchValue'   => $search,
-                'tmpl'          => $request->get('tmpl', 'index'),
-                'activePreset'  => $repo->findActivePreset(),
-                'presets'       => [
-                    'minimal'  => CronOrchestratorModel::getPresetJobs('minimal'),
+                'jobs' => $jobs,
+                'searchValue' => $search,
+                'tmpl' => $request->get('tmpl', 'index'),
+                'activePreset' => $repo->findActivePreset(),
+                'presets' => [
+                    'minimal' => CronOrchestratorModel::getPresetJobs('minimal'),
                     'standard' => CronOrchestratorModel::getPresetJobs('standard'),
-                    'full'     => CronOrchestratorModel::getPresetJobs('full'),
-                    'custom'   => CronOrchestratorModel::getPresetJobs('custom'),
+                    'full' => CronOrchestratorModel::getPresetJobs('full'),
+                    'custom' => CronOrchestratorModel::getPresetJobs('custom'),
                 ],
             ],
             'contentTemplate' => '@MauticCronOrchestratorBundle/Cron/index.html.twig',
             'passthroughVars' => [
                 'activeLink' => '#mautic_cron_orchestrator_index',
-                'route'      => $this->generateUrl('mautic_cron_orchestrator_index'),
+                'route' => $this->generateUrl('mautic_cron_orchestrator_index'),
             ],
         ]);
     }
@@ -116,49 +116,49 @@ class CronController extends FormController
 
         $form = $this->createFormBuilder($job, ['action' => $action])
             ->add('name', TextType::class, [
-                'label'       => 'mautic.cron.orchestrator.form.name',
-                'label_attr'  => ['class' => 'control-label'],
-                'attr'        => ['class' => 'form-control'],
-                'required'    => true,
-                'empty_data'  => '',
+                'label' => 'mautic.cron.orchestrator.form.name',
+                'label_attr' => ['class' => 'control-label'],
+                'attr' => ['class' => 'form-control'],
+                'required' => true,
+                'empty_data' => '',
                 'constraints' => [
                     new NotBlank(['message' => 'mautic.core.value.required']),
                 ],
             ])
             ->add('command', TextType::class, [
-                'label'       => 'mautic.cron.orchestrator.form.command',
-                'label_attr'  => ['class' => 'control-label'],
-                'attr'        => ['class' => 'form-control'],
-                'required'    => true,
-                'empty_data'  => '',
+                'label' => 'mautic.cron.orchestrator.form.command',
+                'label_attr' => ['class' => 'control-label'],
+                'attr' => ['class' => 'form-control'],
+                'required' => true,
+                'empty_data' => '',
                 'constraints' => [
                     new NotBlank(['message' => 'mautic.core.value.required']),
                 ],
             ])
             ->add('arguments', TextType::class, [
-                'label'      => 'mautic.cron.orchestrator.form.arguments',
+                'label' => 'mautic.cron.orchestrator.form.arguments',
                 'label_attr' => ['class' => 'control-label'],
-                'attr'       => ['class' => 'form-control'],
-                'required'   => false,
+                'attr' => ['class' => 'form-control'],
+                'required' => false,
                 'empty_data' => null,
             ])
             ->add('frequencyMinutes', IntegerType::class, [
-                'label'       => 'mautic.cron.orchestrator.form.frequency',
-                'label_attr'  => ['class' => 'control-label'],
-                'attr'        => ['class' => 'form-control'],
-                'required'    => true,
-                'empty_data'  => 0,
+                'label' => 'mautic.cron.orchestrator.form.frequency',
+                'label_attr' => ['class' => 'control-label'],
+                'attr' => ['class' => 'form-control'],
+                'required' => true,
+                'empty_data' => 0,
                 'constraints' => [
                     new GreaterThan([
-                        'value'   => 0,
+                        'value' => 0,
                         'message' => 'mautic.cron.orchestrator.form.frequency.invalid',
                     ]),
                 ],
             ])
             ->add('isEnabled', YesNoButtonGroupType::class, [
-                'label'     => 'mautic.cron.orchestrator.form.enabled',
+                'label' => 'mautic.cron.orchestrator.form.enabled',
                 'yes_value' => true,
-                'no_value'  => false,
+                'no_value' => false,
             ])
             ->add('buttons', FormButtonsType::class)
             ->getForm();
@@ -184,15 +184,15 @@ class CronController extends FormController
 
         return $this->delegateView([
             'viewParameters' => [
-                'job'         => $job,
-                'is_new'      => $isNew,
+                'job' => $job,
+                'is_new' => $isNew,
                 'recent_logs' => $recentLogs,
-                'form'        => $form->createView(),
+                'form' => $form->createView(),
             ],
             'contentTemplate' => '@MauticCronOrchestratorBundle/Cron/edit.html.twig',
             'passthroughVars' => [
                 'activeLink' => '#mautic_cron_orchestrator_index',
-                'route'      => $this->generateUrl('mautic_cron_orchestrator_edit', ['objectId' => $objectId]),
+                'route' => $this->generateUrl('mautic_cron_orchestrator_edit', ['objectId' => $objectId]),
             ],
         ]);
     }

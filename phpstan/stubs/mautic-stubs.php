@@ -42,6 +42,23 @@ class FormController extends AbstractController
         return new Response('', 403);
     }
 
+    protected function notFound(string $msg = 'mautic.core.url.error.404'): Response
+    {
+        return new Response($msg, 404);
+    }
+
+    /**
+     * @param array<string, mixed> $messageVars
+     */
+    protected function addFlashMessage(
+        string $message,
+        array $messageVars = [],
+        string $level = 'notice',
+        string $domain = 'flashes',
+        bool $addNotification = false,
+    ): void {
+    }
+
     protected function getDoctrine(): ManagerRegistry
     {
         throw new \RuntimeException('Stub');
@@ -64,6 +81,22 @@ class FormController extends AbstractController
     }
 
     /**
+     * @param \Symfony\Component\Form\FormInterface<mixed> $form
+     */
+    protected function isFormCancelled(\Symfony\Component\Form\FormInterface $form): bool
+    {
+        return false;
+    }
+
+    /**
+     * @param \Symfony\Component\Form\FormInterface<mixed> $form
+     */
+    protected function isFormApplied(\Symfony\Component\Form\FormInterface $form): bool
+    {
+        return false;
+    }
+
+    /**
      * @param array<string, mixed> $parameters
      */
     protected function redirectToRoute(string $route, array $parameters = [], int $status = 302): RedirectResponse
@@ -83,6 +116,24 @@ class FormController extends AbstractController
     {
         throw new \RuntimeException('Stub');
     }
+}
+
+namespace Mautic\CoreBundle\Form\Type;
+
+use Symfony\Component\Form\AbstractType;
+
+/**
+ * @extends AbstractType<mixed>
+ */
+class YesNoButtonGroupType extends AbstractType
+{
+}
+
+/**
+ * @extends AbstractType<mixed>
+ */
+class FormButtonsType extends AbstractType
+{
 }
 
 namespace Mautic\CoreBundle\Security\Permissions;
@@ -231,4 +282,28 @@ class MenuEvent extends Event
     {
         return 'main';
     }
+}
+
+namespace Symfony\Component\Validator;
+
+class Constraint
+{
+    /**
+     * @param array<string, mixed>|null $options
+     */
+    public function __construct($options = null)
+    {
+    }
+}
+
+namespace Symfony\Component\Validator\Constraints;
+
+use Symfony\Component\Validator\Constraint;
+
+class NotBlank extends Constraint
+{
+}
+
+class GreaterThan extends Constraint
+{
 }

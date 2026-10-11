@@ -130,6 +130,81 @@ final class CronRunCommandTest extends TestCase
         $this->assertStringContainsString('3 skipped', $display);
     }
 
+    public function testJobOptionRunsSingleJobSuccessfully(): void
+    {
+        $model = $this->createMock(CronOrchestratorModel::class);
+        $model->expects($this->once())
+            ->method('runJobById')
+            ->with(15)
+            ->willReturn(['status' => 'success', 'output' => 'ok']);
+        $model->expects($this->never())->method('runDueJobs');
+
+        $command = new CronRunCommand($model, $this->publishedConfig());
+        $app = new Application();
+        $app->add($command);
+
+        $tester = new CommandTester($app->find('mautic:cron:run'));
+        $exitCode = $tester->execute(['--job' => '15']);
+
+        $this->assertSame(0, $exitCode);
+        $this->assertStringContainsString('Job #15 finished with status: success', $tester->getDisplay());
+    }
+
+    public function testJobOptionReturnsFailureWhenJobMissing(): void
+    {
+        $model = $this->createMock(CronOrchestratorModel::class);
+        $model->expects($this->once())->method('runJobById')->with(99)->willReturn(null);
+        $model->expects($this->never())->method('runDueJobs');
+
+        $command = new CronRunCommand($model, $this->publishedConfig());
+        $app = new Application();
+        $app->add($command);
+
+        $tester = new CommandTester($app->find('mautic:cron:run'));
+        $exitCode = $tester->execute(['--job' => '99']);
+
+        $this->assertSame(1, $exitCode);
+        $this->assertStringContainsString('not found', $tester->getDisplay());
+    }
+
+    public function testJobOptionReturnsFailureOnErrorStatus(): void
+    {
+        $model = $this->createMock(CronOrchestratorModel::class);
+        $model->expects($this->once())
+            ->method('runJobById')
+            ->with(7)
+            ->willReturn(['status' => 'error', 'output' => 'boom']);
+
+        $command = new CronRunCommand($model, $this->publishedConfig());
+        $app = new Application();
+        $app->add($command);
+
+        $tester = new CommandTester($app->find('mautic:cron:run'));
+        $exitCode = $tester->execute(['--job' => '7']);
+
+        $this->assertSame(1, $exitCode);
+        $this->assertStringContainsString('status: error', $tester->getDisplay());
+    }
+
+    public function testJobOptionReturnsFailureOnTimeoutStatus(): void
+    {
+        $model = $this->createMock(CronOrchestratorModel::class);
+        $model->expects($this->once())
+            ->method('runJobById')
+            ->with(8)
+            ->willReturn(['status' => 'timeout', 'output' => '']);
+
+        $command = new CronRunCommand($model, $this->publishedConfig());
+        $app = new Application();
+        $app->add($command);
+
+        $tester = new CommandTester($app->find('mautic:cron:run'));
+        $exitCode = $tester->execute(['--job' => '8']);
+
+        $this->assertSame(1, $exitCode);
+        $this->assertStringContainsString('status: timeout', $tester->getDisplay());
+    }
+
     private function publishedConfig(): Config
     {
         $config = $this->createMock(Config::class);
