@@ -40,6 +40,7 @@
                 }) -}}
                 <th>{{ 'mautic.cron.orchestrator.th.name'|trans }}</th>
                 <th>{{ 'mautic.cron.orchestrator.th.command'|trans }}</th>
+                <th>{{ 'mautic.cron.orchestrator.th.source'|trans }}</th>
                 <th>{{ 'mautic.cron.orchestrator.th.frequency'|trans }}</th>
                 <th>{{ 'mautic.cron.orchestrator.th.last_run'|trans }}</th>
                 <th>{{ 'mautic.cron.orchestrator.th.duration'|trans }}</th>
@@ -50,7 +51,7 @@
         <tbody>
             {% if jobs is empty %}
                 <tr>
-                    <td colspan="8" class="text-center text-muted">
+                    <td colspan="9" class="text-center text-muted">
                         {{ 'mautic.cron.orchestrator.no_jobs'|trans }}
                     </td>
                 </tr>
@@ -75,6 +76,15 @@
                             </div>
                         </td>
                         <td><code>{{ job.command }}{% if job.arguments %} {{ job.arguments }}{% endif %}</code></td>
+                        <td>
+                            {% if job.preset == 'custom' %}
+                                <span class="label label-default">{{ 'mautic.cron.orchestrator.preset.custom'|trans }}</span>
+                            {% else %}
+                                <span class="label label-info" title="{{ 'mautic.cron.orchestrator.source.preset'|trans }}">
+                                    {{ ('mautic.cron.orchestrator.preset.' ~ job.preset)|trans }}
+                                </span>
+                            {% endif %}
+                        </td>
                         <td>{{ 'mautic.cron.orchestrator.every_minutes'|trans({'%minutes%': job.frequencyMinutes}) }}</td>
                         <td>{% if job.lastRunAt %}{{ job.lastRunAt|date('Y-m-d H:i') }}{% else %}{{ 'mautic.cron.orchestrator.never'|trans }}{% endif %}</td>
                         <td>
