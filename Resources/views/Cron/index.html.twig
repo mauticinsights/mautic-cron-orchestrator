@@ -39,6 +39,11 @@
             },
             'bulk_actions': {
                 'target': '#cronJobsTable',
+                'templateButtons': {
+                    'delete': true,
+                },
+                'actionRoute': 'mautic_cron_orchestrator_batch_delete',
+                'langVar': 'cron.orchestrator',
                 'customButtons': [
                     {
                         'confirm': {
@@ -60,14 +65,6 @@
                             'btnText': 'mautic.cron.orchestrator.batch.disable'|trans,
                             'precheck': 'batchActionPrecheck',
                             'confirmCallback': 'executeBatchAction',
-                        },
-                    },
-                    {
-                        'confirm': {
-                            'message': 'mautic.cron.orchestrator.confirm_batch_delete'|trans,
-                            'confirmText': 'mautic.core.form.delete'|trans,
-                            'confirmAction': path('mautic_cron_orchestrator_batch_delete'),
-                            'template': 'batchdelete',
                         },
                     },
                 ],
