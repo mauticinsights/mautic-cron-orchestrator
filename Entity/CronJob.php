@@ -65,9 +65,9 @@ class CronJob
         return $this->name;
     }
 
-    public function setName(string $name): void
+    public function setName(?string $name): void
     {
-        $this->name = $name;
+        $this->name = $name ?? '';
     }
 
     public function getCommand(): string
@@ -75,9 +75,9 @@ class CronJob
         return $this->command;
     }
 
-    public function setCommand(string $command): void
+    public function setCommand(?string $command): void
     {
-        $this->command = $command;
+        $this->command = $command ?? '';
     }
 
     public function getArguments(): ?string
@@ -95,9 +95,9 @@ class CronJob
         return $this->frequencyMinutes;
     }
 
-    public function setFrequencyMinutes(int $frequencyMinutes): void
+    public function setFrequencyMinutes(int|string|null $frequencyMinutes): void
     {
-        $this->frequencyMinutes = $frequencyMinutes;
+        $this->frequencyMinutes = (int) ($frequencyMinutes ?? 0);
     }
 
     public function isEnabled(): bool
@@ -105,9 +105,9 @@ class CronJob
         return $this->isEnabled;
     }
 
-    public function setIsEnabled(bool $isEnabled): void
+    public function setIsEnabled(bool|int|null $isEnabled): void
     {
-        $this->isEnabled = $isEnabled;
+        $this->isEnabled = (bool) $isEnabled;
     }
 
     public function getPreset(): string

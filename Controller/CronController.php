@@ -6,18 +6,20 @@ namespace MauticPlugin\MauticCronOrchestratorBundle\Controller;
 
 use DateTimeImmutable;
 use Mautic\CoreBundle\Controller\FormController;
+use Mautic\CoreBundle\Form\Type\FormButtonsType;
+use Mautic\CoreBundle\Form\Type\YesNoButtonGroupType;
 use MauticPlugin\MauticCronOrchestratorBundle\Entity\CronJob;
 use MauticPlugin\MauticCronOrchestratorBundle\Entity\CronJobLog;
 use MauticPlugin\MauticCronOrchestratorBundle\Integration\Config;
 use MauticPlugin\MauticCronOrchestratorBundle\Model\CronOrchestratorModel;
 use MauticPlugin\MauticCronOrchestratorBundle\Repository\CronJobLogRepository;
 use MauticPlugin\MauticCronOrchestratorBundle\Repository\CronJobRepository;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints\GreaterThan;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Mautic admin UI for managing cron jobs.
@@ -80,56 +82,92 @@ class CronController extends FormController
             $recentLogs = [];
             $job = new CronJob();
             $job->setPreset('custom');
+            $job->setName('');
+            $job->setCommand('');
+            $job->setFrequencyMinutes(15);
         }
 
         $action = $this->generateUrl('mautic_cron_orchestrator_edit', ['objectId' => $objectId]);
 
         $form = $this->createFormBuilder($job, ['action' => $action])
             ->add('name', TextType::class, [
-                'label' => 'mautic.cron.orchestrator.form.name',
-                'required' => true,
+                'label'       => 'mautic.cron.orchestrator.form.name',
+                'label_attr'  => ['class' => 'control-label'],
+                'attr'        => ['class' => 'form-control'],
+                'required'    => true,
+                'empty_data'  => '',
+                'constraints' => [
+                    new NotBlank(['message' => 'mautic.core.value.required']),
+                ],
             ])
             ->add('command', TextType::class, [
-                'label' => 'mautic.cron.orchestrator.form.command',
-                'required' => true,
+                'label'       => 'mautic.cron.orchestrator.form.command',
+                'label_attr'  => ['class' => 'control-label'],
+                'attr'        => ['class' => 'form-control'],
+                'required'    => true,
+                'empty_data'  => '',
+                'constraints' => [
+                    new NotBlank(['message' => 'mautic.core.value.required']),
+                ],
             ])
             ->add('arguments', TextType::class, [
-                'label' => 'mautic.cron.orchestrator.form.arguments',
-                'required' => false,
+                'label'      => 'mautic.cron.orchestrator.form.arguments',
+                'label_attr' => ['class' => 'control-label'],
+                'attr'       => ['class' => 'form-control'],
+                'required'   => false,
+                'empty_data' => null,
             ])
             ->add('frequencyMinutes', IntegerType::class, [
-                'label' => 'mautic.cron.orchestrator.form.frequency',
-                'required' => true,
+                'label'       => 'mautic.cron.orchestrator.form.frequency',
+                'label_attr'  => ['class' => 'control-label'],
+                'attr'        => ['class' => 'form-control'],
+                'required'    => true,
+                'empty_data'  => 0,
+                'constraints' => [
+                    new GreaterThan([
+                        'value'   => 0,
+                        'message' => 'mautic.cron.orchestrator.form.frequency.invalid',
+                    ]),
+                ],
             ])
-            ->add('isEnabled', CheckboxType::class, [
-                'label' => 'mautic.cron.orchestrator.form.enabled',
-                'required' => false,
+            ->add('isEnabled', YesNoButtonGroupType::class, [
+                'label'     => 'mautic.cron.orchestrator.form.enabled',
+                'yes_value' => true,
+                'no_value'  => false,
             ])
-            ->add('save', SubmitType::class, [
-                'label' => 'mautic.cron.orchestrator.form.save',
-            ])
+            ->add('buttons', FormButtonsType::class)
             ->getForm();
 
         $form->handleRequest($request);
 
+        if ($form->isSubmitted() && $this->isFormCancelled($form)) {
+            return $this->redirectToRoute('mautic_cron_orchestrator_index');
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
             $job->setModifiedAt(new DateTimeImmutable());
             $repo->save($job);
+
+            if ($this->isFormApplied($form)) {
+                return $this->redirectToRoute('mautic_cron_orchestrator_edit', [
+                    'objectId' => $job->getId(),
+                ]);
+            }
 
             return $this->redirectToRoute('mautic_cron_orchestrator_index');
         }
 
         return $this->delegateView([
             'viewParameters' => [
-                'job' => $job,
-                'is_new' => $isNew,
+                'job'         => $job,
+                'is_new'      => $isNew,
                 'recent_logs' => $recentLogs,
-                'form' => $form->createView(),
+                'form'        => $form->createView(),
             ],
             'contentTemplate' => '@MauticCronOrchestratorBundle/Cron/edit.html.twig',
             'passthroughVars' => [
                 'activeLink' => '#mautic_cron_orchestrator_index',
-                'route' => $this->generateUrl('mautic_cron_orchestrator_edit', ['objectId' => $objectId]),
+                'route'      => $this->generateUrl('mautic_cron_orchestrator_edit', ['objectId' => $objectId]),
             ],
         ]);
     }
