@@ -11,7 +11,8 @@
     {# Core confirmation Cancel uses btn-primary without an icon, so default
        padding-right (spacing-10) leaves unused space beside the label. #}
     <style>
-        .confirmation-modal .btn.btn-primary {
+        .confirmation-modal .btn.btn-primary,
+        #CronJobLogModal .btn.btn-primary {
             padding-right: var(--spacing-05);
         }
     </style>
@@ -28,6 +29,41 @@
             {{ include('@MauticCronOrchestratorBundle/Cron/_list.html.twig') }}
         </div>
     </div>
+    {# Custom modal (not Helper/modal): core helper hardcodes data-backdrop="static",
+       which prevents Esc from closing the dialog. #}
+    <div class="modal fade"
+         id="CronJobLogModal"
+         tabindex="-1"
+         role="dialog"
+         aria-labelledby="CronJobLogModal-label"
+         aria-hidden="true"
+         data-keyboard="true"
+         data-backdrop="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="CronJobLogModal-label"></h4>
+                    <div class="modal-loading-bar">{{ 'mautic.core.loading'|trans }}</div>
+                </div>
+                <div class="modal-body">
+                    <div class="loading-placeholder">{{ 'mautic.core.loading'|trans }}</div>
+                    <div class="modal-body-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        mQuery(function () {
+            mQuery(document).off('keydown.cronJobLogModal').on('keydown.cronJobLogModal', function (e) {
+                if ((e.key === 'Escape' || e.keyCode === 27) && mQuery('#CronJobLogModal').hasClass('in')) {
+                    mQuery('#CronJobLogModal').modal('hide');
+                }
+            });
+        });
+    </script>
     {% else %}
         {{ include('@MauticCronOrchestratorBundle/Cron/_list.html.twig') }}
     {% endif %}

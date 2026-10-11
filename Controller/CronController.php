@@ -64,6 +64,31 @@ class CronController extends FormController
         ]);
     }
 
+    public function lastLogAction(Config $config, int|string $objectId): Response
+    {
+        if (!$this->security->isAdmin() || !$config->isPublished()) {
+            return $this->accessDenied();
+        }
+
+        $job = $this->cronJobRepository()->find((int) $objectId);
+        if (null === $job) {
+            return $this->notFound();
+        }
+
+        $logs = $this->cronJobLogRepository()->findRecentByJob($job, 1);
+
+        return $this->delegateView([
+            'viewParameters' => [
+                'job' => $job,
+                'log' => $logs[0] ?? null,
+            ],
+            'contentTemplate' => '@MauticCronOrchestratorBundle/Cron/last_log.html.twig',
+            'passthroughVars' => [
+                'route' => false,
+            ],
+        ]);
+    }
+
     public function editAction(Request $request, Config $config, int|string $objectId = 0): Response
     {
         if (!$this->security->isAdmin() || !$config->isPublished()) {

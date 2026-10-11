@@ -17,6 +17,10 @@ return [
                 'path' => '/cron/edit/{objectId}',
                 'controller' => 'MauticPlugin\MauticCronOrchestratorBundle\Controller\CronController::editAction',
             ],
+            'mautic_cron_orchestrator_last_log' => [
+                'path' => '/cron/log/{objectId}',
+                'controller' => 'MauticPlugin\MauticCronOrchestratorBundle\Controller\CronController::lastLogAction',
+            ],
             'mautic_cron_orchestrator_toggle' => [
                 'path' => '/cron/toggle/{objectId}',
                 'controller' => 'MauticPlugin\MauticCronOrchestratorBundle\Controller\CronController::toggleAction',

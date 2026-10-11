@@ -95,19 +95,30 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% set badge_class = 'label-primary' %}
-                            {% if job.lastRunStatus == 'success' %}
-                                {% set badge_class = 'label-success' %}
-                            {% elseif job.lastRunStatus == 'error' %}
-                                {% set badge_class = 'label-danger' %}
-                            {% elseif job.lastRunStatus == 'running' %}
-                                {% set badge_class = 'label-warning' %}
-                            {% endif %}
-                            {% if job.lastRunStatus %}
-                                <span class="label {{ badge_class }}">{{ job.lastRunStatus }}</span>
-                            {% else %}
-                                <span class="label label-default">{{ 'mautic.cron.orchestrator.pending'|trans }}</span>
-                            {% endif %}
+                            <div class="d-flex ai-center gap-xs">
+                                {% set badge_class = 'label-primary' %}
+                                {% if job.lastRunStatus == 'success' %}
+                                    {% set badge_class = 'label-success' %}
+                                {% elseif job.lastRunStatus == 'error' %}
+                                    {% set badge_class = 'label-danger' %}
+                                {% elseif job.lastRunStatus == 'running' %}
+                                    {% set badge_class = 'label-warning' %}
+                                {% endif %}
+                                {% if job.lastRunStatus %}
+                                    <span class="label {{ badge_class }}">{{ job.lastRunStatus }}</span>
+                                    <a href="{{ path('mautic_cron_orchestrator_last_log', { objectId: job.id }) }}"
+                                       class="text-muted"
+                                       data-toggle="ajaxmodal"
+                                       data-target="#CronJobLogModal"
+                                       data-footer="false"
+                                       data-header="{{ 'mautic.cron.orchestrator.last_log'|trans({'%name%': job.name})|e('html_attr') }}"
+                                       title="{{ 'mautic.cron.orchestrator.view_last_log'|trans|e('html_attr') }}">
+                                        <i class="ri-information-line ri-lg"></i>
+                                    </a>
+                                {% else %}
+                                    <span class="label label-default">{{ 'mautic.cron.orchestrator.pending'|trans }}</span>
+                                {% endif %}
+                            </div>
                         </td>
                         <td>
                             <div class="btn-group btn-group-xs">
