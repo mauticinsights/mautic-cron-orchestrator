@@ -18,11 +18,24 @@
     <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="cron-preset-switcher">
         {% for key, _ in presets %}
             <li{% if displayPreset == key %} class="active"{% endif %}>
-                <a href="{{ path('mautic_cron_orchestrator_preset', { preset: key }) }}"
-                   data-toggle="ajax"
-                   data-method="POST">
-                    {{ ('mautic.cron.orchestrator.preset.' ~ key)|trans }}
-                </a>
+                {% if displayPreset == key %}
+                    <a href="javascript:void(0);">
+                        {{ ('mautic.cron.orchestrator.preset.' ~ key)|trans }}
+                    </a>
+                {% else %}
+                    {# Avoid confirm.html.twig here: its escape('js') turns spaces into \u0020 in the button label. #}
+                    <a href="{{ path('mautic_cron_orchestrator_preset', { preset: key }) }}"
+                       data-toggle="confirmation"
+                       data-message="{{ 'mautic.cron.orchestrator.confirm_preset'|trans({
+                           '%preset%': ('mautic.cron.orchestrator.preset.' ~ key)|trans,
+                       })|e('html_attr') }}"
+                       data-confirm-text="{{ 'mautic.cron.orchestrator.apply_preset'|trans|e('html_attr') }}"
+                       data-confirm-callback="executeAction"
+                       data-cancel-text="{{ 'mautic.core.form.cancel'|trans|e('html_attr') }}"
+                       data-cancel-callback="dismissConfirmation">
+                        {{ ('mautic.cron.orchestrator.preset.' ~ key)|trans }}
+                    </a>
+                {% endif %}
             </li>
         {% endfor %}
     </ul>
