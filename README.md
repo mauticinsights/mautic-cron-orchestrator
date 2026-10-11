@@ -24,13 +24,23 @@ A plugin for Mautic 5.x that replaces dozens of system cron entries with a **sin
 
 ### Recommended (Packagist)
 
-From the root of your Mautic project:
+From the root of your Mautic project. Use a constraint that matches your Mautic major version (plugin `^5` → Mautic 5.x, plugin `^6` → Mautic 6.x, …):
 
 ```bash
 composer require mauticinsights/mautic-cron-orchestrator:^5
 ```
 
 Package: [packagist.org/packages/mauticinsights/mautic-cron-orchestrator](https://packagist.org/packages/mauticinsights/mautic-cron-orchestrator)
+
+### Alternative: install from ZIP (no Composer)
+
+1. Download **Source code (zip)** for the release that matches your Mautic major version (plugin `5.x` → Mautic 5.x, plugin `6.x` → Mautic 6.x, …): [github.com/mauticinsights/mautic-cron-orchestrator/releases](https://github.com/mauticinsights/mautic-cron-orchestrator/releases).
+2. Extract it into your Mautic `plugins/` directory (on Composer-based installs often `docroot/plugins/`) so the path is:
+
+   `plugins/MauticCronOrchestratorBundle/composer.json`
+
+   Rename the extracted folder to `MauticCronOrchestratorBundle` if GitHub named it something like `mautic-cron-orchestrator-5.0.0`.
+3. Click **Install/Upgrade Plugins** in **Settings → Plugins** instead.
 
 ### Alternative: install from GitHub (VCS)
 
@@ -51,12 +61,16 @@ composer require mauticinsights/mautic-cron-orchestrator:dev-main -W
 
 ### After install
 
+If you have CLI access:
+
 ```bash
 php bin/console cache:clear --env=prod
 php bin/console mautic:plugins:reload
 ```
 
-1. Open **Settings** (gear icon) → **Plugins**.
+Then in the Mautic UI:
+
+1. Open **Settings** (gear icon) → **Plugins** (after a ZIP install, click **Install/Upgrade Plugins** if the plugin is not listed yet).
 2. Open **Mautic Cron Orchestrator** / **Cron Orchestrator**.
 3. Set **Enabled** to **Yes** and save.
 4. **Refresh the page** (full browser reload) so the **Cron Jobs** menu appears.
