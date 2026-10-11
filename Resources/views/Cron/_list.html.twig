@@ -21,7 +21,20 @@
             {% else %}
                 {% for job in jobs %}
                     <tr class="{% if not job.isEnabled %}text-muted{% endif %}">
-                        <td>{{ job.name }}</td>
+                        <td>
+                            <div class="d-flex ai-center gap-xs">
+                                <a href="{{ path('mautic_cron_orchestrator_toggle', { objectId: job.id }) }}"
+                                   data-toggle="ajax"
+                                   data-method="POST"
+                                   title="{{ (job.isEnabled ? 'mautic.core.form.active' : 'mautic.core.form.inactive')|trans }}"
+                                   data-placement="right">
+                                    <i class="ri-fw ri-lg {% if job.isEnabled %}ri-toggle-fill text-success{% else %}ri-toggle-line text-danger{% endif %} has-click-event"></i>
+                                </a>
+                                <a href="{{ path('mautic_cron_orchestrator_edit', { objectId: job.id }) }}" data-toggle="ajax">
+                                    {{ job.name }}
+                                </a>
+                            </div>
+                        </td>
                         <td><code>{{ job.command }}{% if job.arguments %} {{ job.arguments }}{% endif %}</code></td>
                         <td>{{ 'mautic.cron.orchestrator.every_minutes'|trans({'%minutes%': job.frequencyMinutes}) }}</td>
                         <td>{% if job.lastRunAt %}{{ job.lastRunAt|date('Y-m-d H:i') }}{% else %}{{ 'mautic.cron.orchestrator.never'|trans }}{% endif %}</td>
@@ -46,9 +59,6 @@
                             {% else %}
                                 <span class="label label-default">{{ 'mautic.cron.orchestrator.pending'|trans }}</span>
                             {% endif %}
-                            {% if not job.isEnabled %}
-                                <span class="label label-default">{{ 'mautic.cron.orchestrator.disabled_hint'|trans }}</span>
-                            {% endif %}
                         </td>
                         <td>
                             <div class="btn-group btn-group-xs">
@@ -57,16 +67,9 @@
                                    title="{{ 'mautic.core.form.edit'|trans }}">
                                     <i class="fa fa-pencil"></i>
                                 </a>
-                                <a href="{{ path('mautic_cron_orchestrator_toggle', { objectId: job.id }) }}"
-                                   class="btn btn-default" data-toggle="ajax" data-method="POST">
-                                    {% if job.isEnabled %}
-                                        <i class="fa fa-pause"></i>
-                                    {% else %}
-                                        <i class="fa fa-play"></i>
-                                    {% endif %}
-                                </a>
                                 <a href="{{ path('mautic_cron_orchestrator_run', { objectId: job.id }) }}"
-                                   class="btn btn-default" data-toggle="ajax" data-method="POST">
+                                   class="btn btn-default" data-toggle="ajax" data-method="POST"
+                                   title="{{ 'mautic.cron.orchestrator.run_now'|trans }}">
                                     <i class="fa fa-play-circle"></i>
                                 </a>
                                 {{- include('@MauticCore/Helper/confirm.html.twig', {
