@@ -5,47 +5,15 @@
                 {{- include('@MauticCore/Helper/tableheader.html.twig', {
                     'checkall': 'true',
                     'target': '#cronJobsTable',
-                    'customButtons': [
-                        {
-                            'confirm': {
-                                'message': 'mautic.cron.orchestrator.confirm_batch_enable'|trans,
-                                'confirmText': 'mautic.core.form.active'|trans,
-                                'confirmAction': path('mautic_cron_orchestrator_batch_enable'),
-                                'iconClass': 'ri-toggle-fill text-success',
-                                'btnText': 'mautic.cron.orchestrator.batch.enable'|trans,
-                                'precheck': 'batchActionPrecheck',
-                                'confirmCallback': 'executeBatchAction',
-                            },
-                        },
-                        {
-                            'confirm': {
-                                'message': 'mautic.cron.orchestrator.confirm_batch_disable'|trans,
-                                'confirmText': 'mautic.core.form.inactive'|trans,
-                                'confirmAction': path('mautic_cron_orchestrator_batch_disable'),
-                                'iconClass': 'ri-toggle-line text-danger',
-                                'btnText': 'mautic.cron.orchestrator.batch.disable'|trans,
-                                'precheck': 'batchActionPrecheck',
-                                'confirmCallback': 'executeBatchAction',
-                            },
-                        },
-                        {
-                            'confirm': {
-                                'message': 'mautic.cron.orchestrator.confirm_batch_delete'|trans,
-                                'confirmText': 'mautic.core.form.delete'|trans,
-                                'confirmAction': path('mautic_cron_orchestrator_batch_delete'),
-                                'template': 'batchdelete',
-                            },
-                        },
-                    ],
                 }) -}}
                 <th>{{ 'mautic.cron.orchestrator.th.name'|trans }}</th>
                 <th>{{ 'mautic.cron.orchestrator.th.command'|trans }}</th>
                 <th>{{ 'mautic.cron.orchestrator.th.source'|trans }}</th>
                 <th>{{ 'mautic.cron.orchestrator.th.frequency'|trans }}</th>
-                <th>{{ 'mautic.cron.orchestrator.th.last_run'|trans }}</th>
+                <th class="text-nowrap">{{ 'mautic.cron.orchestrator.th.last_run'|trans }}</th>
                 <th>{{ 'mautic.cron.orchestrator.th.duration'|trans }}</th>
-                <th>{{ 'mautic.cron.orchestrator.th.status'|trans }}</th>
-                <th>{{ 'mautic.cron.orchestrator.th.actions'|trans }}</th>
+                <th class="text-nowrap">{{ 'mautic.cron.orchestrator.th.status'|trans }}</th>
+                <th class="col-actions text-right text-nowrap">{{ 'mautic.cron.orchestrator.th.actions'|trans }}</th>
             </tr>
         </thead>
         <tbody>
@@ -85,17 +53,17 @@
                                 </span>
                             {% endif %}
                         </td>
-                        <td>{{ 'mautic.cron.orchestrator.every_minutes'|trans({'%minutes%': job.frequencyMinutes}) }}</td>
-                        <td>{% if job.lastRunAt %}{{ job.lastRunAt|date('Y-m-d H:i') }}{% else %}{{ 'mautic.cron.orchestrator.never'|trans }}{% endif %}</td>
-                        <td>
+                        <td class="text-nowrap">{{ 'mautic.cron.orchestrator.every_minutes'|trans({'%minutes%': job.frequencyMinutes}) }}</td>
+                        <td class="text-nowrap">{% if job.lastRunAt %}{{ job.lastRunAt|date('Y-m-d H:i') }}{% else %}{{ 'mautic.cron.orchestrator.never'|trans }}{% endif %}</td>
+                        <td class="text-nowrap">
                             {% if job.lastDurationSeconds is not null %}
                                 {{ 'mautic.cron.orchestrator.duration_seconds'|trans({'%seconds%': job.lastDurationSeconds|number_format(1)}) }}
                             {% else %}
                                 —
                             {% endif %}
                         </td>
-                        <td>
-                            <div class="d-flex ai-center gap-xs">
+                        <td class="text-nowrap">
+                            <div class="d-inline-flex ai-center flex-nowrap gap-xs">
                                 {% set badge_class = 'label-primary' %}
                                 {% if job.lastRunStatus == 'success' %}
                                     {% set badge_class = 'label-success' %}
@@ -120,24 +88,31 @@
                                 {% endif %}
                             </div>
                         </td>
-                        <td>
-                            <div class="btn-group btn-group-xs">
+                        <td class="col-actions text-right text-nowrap">
+                            <div class="d-inline-flex ai-center flex-nowrap">
                                 <a href="{{ path('mautic_cron_orchestrator_edit', { objectId: job.id }) }}"
-                                   class="btn btn-default" data-toggle="ajax"
+                                   class="btn btn-ghost btn-icon btn-sm btn-nospin"
+                                   data-toggle="ajax"
                                    title="{{ 'mautic.core.form.edit'|trans }}">
-                                    <i class="fa fa-pencil"></i>
+                                    <i class="ri-edit-line" aria-hidden="true"></i>
+                                    <span class="sr-only">{{ 'mautic.core.form.edit'|trans }}</span>
                                 </a>
                                 <a href="{{ path('mautic_cron_orchestrator_run', { objectId: job.id }) }}"
-                                   class="btn btn-default" data-toggle="ajax" data-method="POST"
+                                   class="btn btn-ghost btn-icon btn-sm btn-nospin"
+                                   data-toggle="ajax"
+                                   data-method="POST"
                                    title="{{ 'mautic.cron.orchestrator.run_now'|trans }}">
-                                    <i class="fa fa-play-circle"></i>
+                                    <i class="ri-play-circle-line" aria-hidden="true"></i>
+                                    <span class="sr-only">{{ 'mautic.cron.orchestrator.run_now'|trans }}</span>
                                 </a>
                                 {{- include('@MauticCore/Helper/confirm.html.twig', {
-                                    'btnClass': 'btn btn-default',
+                                    'btnClass': 'btn btn-ghost btn-icon btn-sm btn-nospin',
                                     'message': 'mautic.cron.orchestrator.confirm_delete'|trans({'%name%': job.name}),
                                     'confirmText': 'mautic.core.form.delete'|trans,
                                     'confirmAction': path('mautic_cron_orchestrator_delete', { objectId: job.id }),
-                                    'iconClass': 'fa fa-trash-o',
+                                    'iconClass': 'ri-delete-bin-line',
+                                    'wrapOpeningTag': '',
+                                    'wrapClosingTag': '',
                                 }) -}}
                             </div>
                         </td>

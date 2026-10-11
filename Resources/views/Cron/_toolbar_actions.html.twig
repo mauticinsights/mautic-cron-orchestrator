@@ -1,4 +1,4 @@
-{# Preset switcher (shows active preset) + New — order matches Contacts toolbar (actions right of search). #}
+{# Preset switcher + New — rendered via list_toolbar page_actions.extraHtml (M6 toolbar). #}
 {% set activePreset = activePreset|default(null) %}
 {% set displayPreset = activePreset ?? 'custom' %}
 {% set presetLabelKey = 'mautic.cron.orchestrator.preset.' ~ displayPreset %}

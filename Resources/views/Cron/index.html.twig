@@ -17,13 +17,52 @@
         }
     </style>
     <div id="page-list-wrapper" class="panel panel-default">
+        {# M6 list_toolbar renders New/options via page_actions (not list_actions).
+           Preset switcher is custom HTML; keep it beside New via extraHtml. #}
         {{- include('@MauticCore/Helper/list_toolbar.html.twig', {
             'searchValue': searchValue|default(''),
             'action': currentRoute,
-            'list_actions': include('@MauticCronOrchestratorBundle/Cron/_toolbar_actions.html.twig', {
-                'presets': presets,
-                'activePreset': activePreset|default(null),
-            }),
+            'page_actions': {
+                'extraHtml': include('@MauticCronOrchestratorBundle/Cron/_toolbar_actions.html.twig', {
+                    'presets': presets,
+                    'activePreset': activePreset|default(null),
+                }),
+            },
+            'bulk_actions': {
+                'target': '#cronJobsTable',
+                'customButtons': [
+                    {
+                        'confirm': {
+                            'message': 'mautic.cron.orchestrator.confirm_batch_enable'|trans,
+                            'confirmText': 'mautic.core.form.active'|trans,
+                            'confirmAction': path('mautic_cron_orchestrator_batch_enable'),
+                            'iconClass': 'ri-toggle-fill text-success',
+                            'btnText': 'mautic.cron.orchestrator.batch.enable'|trans,
+                            'precheck': 'batchActionPrecheck',
+                            'confirmCallback': 'executeBatchAction',
+                        },
+                    },
+                    {
+                        'confirm': {
+                            'message': 'mautic.cron.orchestrator.confirm_batch_disable'|trans,
+                            'confirmText': 'mautic.core.form.inactive'|trans,
+                            'confirmAction': path('mautic_cron_orchestrator_batch_disable'),
+                            'iconClass': 'ri-toggle-line text-danger',
+                            'btnText': 'mautic.cron.orchestrator.batch.disable'|trans,
+                            'precheck': 'batchActionPrecheck',
+                            'confirmCallback': 'executeBatchAction',
+                        },
+                    },
+                    {
+                        'confirm': {
+                            'message': 'mautic.cron.orchestrator.confirm_batch_delete'|trans,
+                            'confirmText': 'mautic.core.form.delete'|trans,
+                            'confirmAction': path('mautic_cron_orchestrator_batch_delete'),
+                            'template': 'batchdelete',
+                        },
+                    },
+                ],
+            },
         }) -}}
         <div class="page-list">
             {{ include('@MauticCronOrchestratorBundle/Cron/_list.html.twig') }}
