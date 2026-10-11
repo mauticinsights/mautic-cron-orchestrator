@@ -2,6 +2,42 @@
     <table class="table table-hover table-striped" id="cronJobsTable">
         <thead>
             <tr>
+                {{- include('@MauticCore/Helper/tableheader.html.twig', {
+                    'checkall': 'true',
+                    'target': '#cronJobsTable',
+                    'customButtons': [
+                        {
+                            'confirm': {
+                                'message': 'mautic.cron.orchestrator.confirm_batch_enable'|trans,
+                                'confirmText': 'mautic.core.form.active'|trans,
+                                'confirmAction': path('mautic_cron_orchestrator_batch_enable'),
+                                'iconClass': 'ri-toggle-fill text-success',
+                                'btnText': 'mautic.cron.orchestrator.batch.enable'|trans,
+                                'precheck': 'batchActionPrecheck',
+                                'confirmCallback': 'executeBatchAction',
+                            },
+                        },
+                        {
+                            'confirm': {
+                                'message': 'mautic.cron.orchestrator.confirm_batch_disable'|trans,
+                                'confirmText': 'mautic.core.form.inactive'|trans,
+                                'confirmAction': path('mautic_cron_orchestrator_batch_disable'),
+                                'iconClass': 'ri-toggle-line text-danger',
+                                'btnText': 'mautic.cron.orchestrator.batch.disable'|trans,
+                                'precheck': 'batchActionPrecheck',
+                                'confirmCallback': 'executeBatchAction',
+                            },
+                        },
+                        {
+                            'confirm': {
+                                'message': 'mautic.cron.orchestrator.confirm_batch_delete'|trans,
+                                'confirmText': 'mautic.core.form.delete'|trans,
+                                'confirmAction': path('mautic_cron_orchestrator_batch_delete'),
+                                'template': 'batchdelete',
+                            },
+                        },
+                    ],
+                }) -}}
                 <th>{{ 'mautic.cron.orchestrator.th.name'|trans }}</th>
                 <th>{{ 'mautic.cron.orchestrator.th.command'|trans }}</th>
                 <th>{{ 'mautic.cron.orchestrator.th.frequency'|trans }}</th>
@@ -14,13 +50,16 @@
         <tbody>
             {% if jobs is empty %}
                 <tr>
-                    <td colspan="7" class="text-center text-muted">
+                    <td colspan="8" class="text-center text-muted">
                         {{ 'mautic.cron.orchestrator.no_jobs'|trans }}
                     </td>
                 </tr>
             {% else %}
                 {% for job in jobs %}
                     <tr class="{% if not job.isEnabled %}text-muted{% endif %}">
+                        <td>
+                            <input type="checkbox" data-target="tbody" data-toggle="selectrow" class="list-checkbox" name="cb{{ job.id }}" value="{{ job.id }}">
+                        </td>
                         <td>
                             <div class="d-flex ai-center gap-xs">
                                 <a href="{{ path('mautic_cron_orchestrator_toggle', { objectId: job.id }) }}"

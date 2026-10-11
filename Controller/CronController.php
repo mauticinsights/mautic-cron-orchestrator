@@ -222,6 +222,54 @@ class CronController extends FormController
         return $this->redirectToRoute('mautic_cron_orchestrator_index');
     }
 
+    public function batchDeleteAction(Request $request, Config $config): Response
+    {
+        if (!$this->security->isAdmin() || !$config->isPublished()) {
+            return $this->accessDenied();
+        }
+
+        if ($request->isMethod('POST')) {
+            $count = $this->cronJobRepository()->deleteByIds($this->parseBatchIds($request));
+            if ($count > 0) {
+                $this->addFlashMessage('mautic.cron.orchestrator.notice.batch_deleted', ['%count%' => $count]);
+            }
+        }
+
+        return $this->redirectToRoute('mautic_cron_orchestrator_index');
+    }
+
+    public function batchEnableAction(Request $request, Config $config): Response
+    {
+        if (!$this->security->isAdmin() || !$config->isPublished()) {
+            return $this->accessDenied();
+        }
+
+        if ($request->isMethod('POST')) {
+            $count = $this->cronJobRepository()->setEnabledByIds($this->parseBatchIds($request), true);
+            if ($count > 0) {
+                $this->addFlashMessage('mautic.cron.orchestrator.notice.batch_enabled', ['%count%' => $count]);
+            }
+        }
+
+        return $this->redirectToRoute('mautic_cron_orchestrator_index');
+    }
+
+    public function batchDisableAction(Request $request, Config $config): Response
+    {
+        if (!$this->security->isAdmin() || !$config->isPublished()) {
+            return $this->accessDenied();
+        }
+
+        if ($request->isMethod('POST')) {
+            $count = $this->cronJobRepository()->setEnabledByIds($this->parseBatchIds($request), false);
+            if ($count > 0) {
+                $this->addFlashMessage('mautic.cron.orchestrator.notice.batch_disabled', ['%count%' => $count]);
+            }
+        }
+
+        return $this->redirectToRoute('mautic_cron_orchestrator_index');
+    }
+
     public function applyPresetAction(Config $config, string $preset, CronOrchestratorModel $orchestrator): Response
     {
         if (!$this->security->isAdmin() || !$config->isPublished()) {
@@ -235,6 +283,19 @@ class CronController extends FormController
         $orchestrator->seedPreset($preset);
 
         return $this->redirectToRoute('mautic_cron_orchestrator_index');
+    }
+
+    /**
+     * @return int[]
+     */
+    private function parseBatchIds(Request $request): array
+    {
+        $ids = json_decode((string) $request->query->get('ids', '[]'), true);
+        if (!\is_array($ids)) {
+            return [];
+        }
+
+        return array_values(array_unique(array_filter(array_map('intval', $ids))));
     }
 
     private function cronJobRepository(): CronJobRepository

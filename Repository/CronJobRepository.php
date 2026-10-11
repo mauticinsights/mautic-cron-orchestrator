@@ -123,4 +123,46 @@ class CronJobRepository extends EntityRepository
         $this->getEntityManager()->remove($job);
         $this->getEntityManager()->flush();
     }
+
+    /**
+     * @param int[] $ids
+     */
+    public function deleteByIds(array $ids): int
+    {
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids))));
+        if ([] === $ids) {
+            return 0;
+        }
+
+        $jobs = $this->findBy(['id' => $ids]);
+        $em   = $this->getEntityManager();
+        foreach ($jobs as $job) {
+            $em->remove($job);
+        }
+        $em->flush();
+
+        return count($jobs);
+    }
+
+    /**
+     * @param int[] $ids
+     */
+    public function setEnabledByIds(array $ids, bool $enabled): int
+    {
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids))));
+        if ([] === $ids) {
+            return 0;
+        }
+
+        return (int) $this->createQueryBuilder('j')
+            ->update()
+            ->set('j.isEnabled', ':enabled')
+            ->set('j.modifiedAt', ':modifiedAt')
+            ->where('j.id IN (:ids)')
+            ->setParameter('enabled', $enabled)
+            ->setParameter('modifiedAt', new DateTimeImmutable())
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->execute();
+    }
 }

@@ -32,6 +32,21 @@ return [
                 'controller' => 'MauticPlugin\MauticCronOrchestratorBundle\Controller\CronController::deleteAction',
                 'method' => 'POST',
             ],
+            'mautic_cron_orchestrator_batch_delete' => [
+                'path' => '/cron/batchDelete',
+                'controller' => 'MauticPlugin\MauticCronOrchestratorBundle\Controller\CronController::batchDeleteAction',
+                'method' => 'POST',
+            ],
+            'mautic_cron_orchestrator_batch_enable' => [
+                'path' => '/cron/batchEnable',
+                'controller' => 'MauticPlugin\MauticCronOrchestratorBundle\Controller\CronController::batchEnableAction',
+                'method' => 'POST',
+            ],
+            'mautic_cron_orchestrator_batch_disable' => [
+                'path' => '/cron/batchDisable',
+                'controller' => 'MauticPlugin\MauticCronOrchestratorBundle\Controller\CronController::batchDisableAction',
+                'method' => 'POST',
+            ],
             'mautic_cron_orchestrator_preset' => [
                 'path' => '/cron/preset/{preset}',
                 'controller' => 'MauticPlugin\MauticCronOrchestratorBundle\Controller\CronController::applyPresetAction',
