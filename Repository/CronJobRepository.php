@@ -66,7 +66,7 @@ class CronJobRepository extends EntityRepository
      */
     public function search(string $search = ''): array
     {
-        $qb = $this->createQueryBuilder('j')->orderBy('j.id', 'ASC');
+        $qb = $this->createQueryBuilder('j')->orderBy('j.name', 'ASC');
 
         $search = trim($search);
         if ('' !== $search) {
