@@ -101,17 +101,6 @@ class CronJobRepository extends EntityRepository
             ->execute();
     }
 
-    /**
-     * Remove every cron job (used by the empty Custom preset).
-     */
-    public function deleteAll(): void
-    {
-        $this->createQueryBuilder('j')
-            ->delete()
-            ->getQuery()
-            ->execute();
-    }
-
     public function save(CronJob $job): void
     {
         $this->getEntityManager()->persist($job);

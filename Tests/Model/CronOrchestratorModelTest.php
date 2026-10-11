@@ -102,12 +102,11 @@ final class CronOrchestratorModelTest extends TestCase
         $this->assertSame([], CronOrchestratorModel::getPresetJobs('custom'));
     }
 
-    public function testSeedPresetCustomDeletesAllJobs(): void
+    public function testSeedPresetCustomRemovesOnlyManagedPresetJobs(): void
     {
         $em = $this->createMock(EntityManagerInterface::class);
         $repo = $this->createMock(CronJobRepository::class);
-        $repo->expects($this->once())->method('deleteAll');
-        $repo->expects($this->never())->method('deleteManagedPresets');
+        $repo->expects($this->once())->method('deleteManagedPresets');
         $em->method('getRepository')->willReturnMap([
             [CronJob::class, $repo],
             [CronJobLog::class, $this->createMock(CronJobLogRepository::class)],

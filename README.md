@@ -92,7 +92,7 @@ On first install the plugin seeds the **Standard** preset automatically. After t
 3. For each job you can enable/disable, edit frequency, run immediately, or delete.
 4. Open a job to see recent run logs.
 
-**Applying a preset** replaces all jobs from built-in presets (`minimal` / `standard` / `full`). Custom jobs you added yourself are left untouched.
+**Applying a preset** (including **Custom**) replaces only jobs from built-in presets (`minimal` / `standard` / `full`). Custom jobs you added yourself are always left untouched.
 
 Presets follow the official [Mautic cron jobs](https://docs.mautic.org/en/5.2/configuration/cron_jobs.html) guide:
 
