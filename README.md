@@ -5,9 +5,12 @@ A plugin for Mautic 5.x that replaces dozens of system cron entries with a **sin
 ## What This Plugin Does
 
 - runs due maintenance jobs via `mautic:cron:run` (one system cron every minute)
-- ships presets: **minimal**, **standard**, **full**
-- provides an admin UI to enable/disable, edit, run, and apply presets
-- logs each run and retains history according to plugin settings
+- ships presets (**Minimal** / **Standard** / **Full**) plus an empty **Custom** mode; switching presets never deletes your custom jobs
+- admin list with search, name sorting, preset badges, and campaign-style on/off toggles
+- batch enable / disable / delete for selected jobs
+- manual **Run now** starts the job in the background so the UI returns immediately
+- last-run status with an info dialog showing command output; recent run history on the job edit page
+- log retention cleanup via plugin settings / `mautic:cron:run --cleanup-only`
 
 ## Requirements
 
@@ -22,7 +25,7 @@ A plugin for Mautic 5.x that replaces dozens of system cron entries with a **sin
 From the root of your Mautic project:
 
 ```bash
-composer require mauticinsights/mautic-cron-orchestrator
+composer require mauticinsights/mautic-cron-orchestrator:^5
 ```
 
 Package: [packagist.org/packages/mauticinsights/mautic-cron-orchestrator](https://packagist.org/packages/mauticinsights/mautic-cron-orchestrator)
@@ -51,12 +54,13 @@ php bin/console cache:clear --env=prod
 php bin/console mautic:plugins:reload
 ```
 
-### Activate in Mautic
+1. Open **Settings** (gear icon) → **Plugins**.
+2. Open **Mautic Cron Orchestrator** / **Cron Orchestrator**.
+3. Set **Enabled** to **Yes** and save.
+4. **Refresh the page** (full browser reload) so the **Cron Jobs** menu appears.
+5. Open **Settings** (gear icon) → **Cron Jobs** (admin users only; URL `/s/cron`).
 
-- open **Settings** (gear icon in the top-right) → **Plugins**
-- open **Mautic Cron Orchestrator** / **Cron Orchestrator**
-- turn **Enabled** to **Yes** and save (required — when disabled, the Cron Jobs UI is hidden and `mautic:cron:run` does nothing)
-- then open **Settings** → **Cron Jobs** (admin users only)
+When the plugin is disabled, the Cron Jobs UI is hidden and `mautic:cron:run` does nothing.
 
 ### System cron
 
@@ -85,12 +89,11 @@ php bin/console mautic:cron:run --cleanup-only
 
 ## Usage
 
-On first install the plugin seeds the **Standard** preset automatically. After that, manage jobs in the Mautic UI:
+On first install the plugin seeds the **Standard** preset automatically. After that, manage jobs under **Settings → Cron Jobs**:
 
-1. Go to **Settings** (top-right gear) → **Cron Jobs**.
-2. Apply a preset (**Minimal** / **Standard** / **Full**) or click **Add custom job**.
-3. For each job you can enable/disable, edit frequency, run immediately, or delete.
-4. Open a job to see recent run logs.
+1. Apply a preset (**Minimal** / **Standard** / **Full**) or click **Add custom job**.
+2. For each job you can enable/disable, edit frequency, run immediately, or delete.
+3. Open a job to see recent run logs, or use the info icon next to Status for the last run output.
 
 **Applying a preset** (including **Custom**) replaces only jobs from built-in presets (`minimal` / `standard` / `full`). Custom jobs you added yourself are always left untouched.
 
@@ -104,19 +107,6 @@ Presets follow the official [Mautic cron jobs](https://docs.mautic.org/en/5.2/co
 
 Core segment/campaign frequencies are staggered (15 / 20 / 25 min). Every preset job includes `--no-interaction --no-ansi`.
 
-### Plugin Enabled switch
-
-In **Settings → Plugins → Cron Orchestrator**, use the standard **Enabled** Yes/No control (same as other Mautic plugins).
-
-| Enabled | Behaviour |
-|---|---|
-| **Yes** | Cron Jobs menu is visible (admins), UI works, `mautic:cron:run` executes due jobs |
-| **No** | Cron Jobs menu is hidden, UI URLs return access denied, `mautic:cron:run` exits without running jobs |
-
-The UI (`/s/cron`) also requires an **admin** user. Non-admins never see the menu and get access denied on direct URLs.
-
-The orchestrator decides which configured jobs are due each minute; you only need the one system cron from **System cron** above.
-
 ## Development
 
 ```bash
@@ -124,15 +114,6 @@ composer install
 make ci          # cs-check + phpstan + phpunit
 make all         # cs-fixer + phpstan + test
 ```
-
-## Verify It Works
-
-- enable the plugin in **Settings → Plugins** (Enabled = Yes)
-- open **Settings → Cron Jobs**, apply a preset, and confirm jobs appear
-- run `php bin/console mautic:cron:run --dry-run` and check due jobs
-- trigger a job manually from the UI and inspect recent run logs
-- confirm Mautic logs have no unexpected orchestrator errors
-- disable the plugin and confirm the Cron Jobs menu disappears and `mautic:cron:run` reports it is disabled
 
 ## License
 
